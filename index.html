@@ -389,21 +389,25 @@ map.fitBounds(line.getBounds())
 
 }
 
-function buildGPX(points){
+function buildGPX(points,name){
 
-let gpx='<?xml version="1.0"?>\n'
+let gpx='<?xml version="1.0" encoding="UTF-8"?>\n'
 
 gpx+='<gpx version="1.1" creator="GPSSetting">\n'
 
-gpx+='<trk><trkseg>\n'
+gpx+='<rte>\n'
+
+gpx+=`<name>${name}</name>\n`
+
+gpx+='<number>0</number>\n'
 
 points.forEach(p=>{
 
-gpx+=`<trkpt lat="${p[0]}" lon="${p[1]}"></trkpt>\n`
+gpx+=`<rtept lat="${p[0]}" lon="${p[1]}"></rtept>\n`
 
 })
 
-gpx+='</trkseg></trk>\n'
+gpx+='</rte>\n'
 
 gpx+='</gpx>'
 
@@ -480,7 +484,7 @@ let last=pts[pts.length-1]
 
 route.push([last.lat,last.lon])
 
-let gpx=buildGPX(route)
+let gpx=buildGPX(route,filename.replace(".gpx",""))
 
 downloadFile(filename,gpx)
 
@@ -504,7 +508,7 @@ let count=base.length
 
 let filename=`${country} ${count}s.gpx`
 
-let gpx=buildGPX(route)
+let gpx=buildGPX(route,filename.replace(".gpx",""))
 
 downloadFile(filename,gpx)
 
