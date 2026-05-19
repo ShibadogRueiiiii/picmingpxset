@@ -283,6 +283,11 @@ route.push([h.lat,h.lon])
 
 })
 
+// 最後回到最後一個原始GPS點
+let last=base[base.length-1]
+
+route.push([last.lat,last.lon])
+
 return route
 
 }
@@ -470,6 +475,11 @@ let offset=randomOffsetPoint(p,50)
 route.push([offset.lat,offset.lon])
 
 })
+
+// 最後回到最後一個原始GPS點
+let last=pts[pts.length-1]
+
+route.push([last.lat,last.lon])
 
 let gpx=buildGPX(route)
 
