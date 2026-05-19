@@ -29,6 +29,12 @@ input{width:100%;margin-top:6px;padding:6px}
 .previewBtn{background:linear-gradient(135deg,#00c6ff,#0072ff);color:white;border:none;padding:14px;border-radius:14px;font-size:16px;font-weight:bold;
 cursor:pointer;transition:0.2s;box-shadow:0 6px 16px rgba(0,114,255,0.35);}
 .previewBtn:hover{transform:translateY(-2px) scale(1.02);box-shadow:0 10px 22px rgba(0,114,255,0.45);}
+/* 種花預覽按鈕 */
+.hexPreviewBtn{background:#8e24aa;color:white;border:none;padding:12px;border-radius:14px;font-size:15px;font-weight:bold;cursor:pointer;transition:0.2s;box-shadow:0 4px 12px rgba(142,36,170,0.35);}
+.hexPreviewBtn:hover{transform:scale(1.03);background:#ab47bc;}
+/* 一鍵下載按鈕 */
+.allDownloadBtn{background:linear-gradient(135deg,#00c853,#64dd17);color:white;border:none;padding:14px;border-radius:14px;font-size:16px;font-weight:bold;cursor:pointer;transition:0.2s;box-shadow:0 6px 16px rgba(0,200,83,0.35);}
+.allDownloadBtn:hover{transform:translateY(-2px) scale(1.02);}
 </style>
 </head>
 
@@ -66,12 +72,20 @@ GPS點位數量：0
 🗺️ 地圖預覽
 </button>
 
+<button class="hexPreviewBtn" onclick="previewHexRoute()">
+🌸 種花路線預覽
+</button>
+
 <button class="fruitBtn" onclick="downloadOriginal()">
 下載 收果路線 GPX
 </button>
 
 <button class="flowerBtn" onclick="downloadHex()">
 下載 種花路線 GPX
+</button>
+
+<button class="allDownloadBtn" onclick="downloadAllRoutes()">
+⬇️ 一鍵下載 收果 + 種花
 </button>
 
 </div>
@@ -311,6 +325,65 @@ layers.push(line)
 map.fitBounds(line.getBounds())
 
 }
+/* 種花路線預覽 */
+
+function previewHexRoute(){
+
+clearMap()
+
+let base=parseInput()
+
+let r=parseFloat(document.getElementById("radius").value)||30
+
+if(base.length==0) return
+
+let route=[]
+
+base.forEach((p,i)=>{
+
+// 主點
+let marker=L.marker([p.lat,p.lon],{
+icon:createLabel(i+1)
+}).addTo(map)
+
+layers.push(marker)
+
+route.push([p.lat,p.lon])
+
+// 六角點
+let hex=hexExpand(p,r)
+
+hex.forEach(h=>{
+
+let label=(i+1)+"-"+h.index
+
+let m=L.marker([h.lat,h.lon],{
+icon:createLabel(label)
+}).addTo(map)
+
+layers.push(m)
+
+route.push([h.lat,h.lon])
+
+})
+
+})
+
+// 路線
+let line=L.polyline(route,{
+
+color:"#e91e63",
+weight:4,
+opacity:0.9,
+smoothFactor:1.5
+
+}).addTo(map)
+
+layers.push(line)
+
+map.fitBounds(line.getBounds())
+
+}
 
 function buildGPX(points){
 
@@ -425,6 +498,19 @@ let filename=`${country} ${count}s.gpx`
 let gpx=buildGPX(route)
 
 downloadFile(filename,gpx)
+
+}
+/* 一鍵下載 收果 + 種花 */
+
+async function downloadAllRoutes(){
+
+await downloadOriginal()
+
+setTimeout(async ()=>{
+
+await downloadHex()
+
+},500)
 
 }
 
