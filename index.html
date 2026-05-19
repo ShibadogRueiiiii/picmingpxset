@@ -82,6 +82,52 @@ maxZoom:19
 
 let layers=[]
 
+/* GPX解析器 */
+
+document.getElementById("fileInput").addEventListener("change", function(e){
+
+const file=e.target.files[0]
+
+if(!file) return
+
+const reader=new FileReader()
+
+reader.onload=function(event){
+
+const text=event.target.result
+
+const parser=new DOMParser()
+
+const xml=parser.parseFromString(text,"text/xml")
+
+const points=xml.querySelectorAll("trkpt,wpt,rtept")
+
+let result=[]
+
+points.forEach(p=>{
+
+let lat=p.getAttribute("lat")
+let lon=p.getAttribute("lon")
+
+if(lat && lon){
+
+result.push(lat+","+lon)
+
+}
+
+})
+
+document.getElementById("gps").value=result.join("\n")
+
+document.getElementById("count").innerText=
+"GPS點位數量："+result.length
+
+}
+
+reader.readAsText(file)
+
+})
+
 function clearMap(){
 layers.forEach(l=>map.removeLayer(l))
 layers=[]
