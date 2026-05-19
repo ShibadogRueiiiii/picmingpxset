@@ -1,4 +1,395 @@
 <!DOCTYPE html>
 <html lang="zh">
-...
+<head>
+<meta charset="UTF-8">
+<title>GPSSetting - Design By 柴可夫斯基</title>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<style>
+body{margin:0;font-family:Arial;background:#f2f2f2}
+header{background:#111;color:white;padding:14px;font-size:20px}
+.container{display:flex;height:calc(100vh - 64px)}
+.left{width:360px;background:white;padding:18px;overflow:auto}
+.right{flex:1}
+textarea{width:100%;height:500px;font-family:monospace}
+button{width:100%;margin-top:8px;padding:10px}
+input{width:100%;margin-top:6px;padding:6px}
+#map{height:100%;width:100%}
+.small{font-size:12px;color:#666}
+
+.label{
+background:white;
+border:1px solid black;
+border-radius:4px;
+padding:2px 4px;
+font-size:12px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+GPSSetting<br>
+Design By 可愛小柴狗
+</header>
+
+<div class="container">
+
+<div class="left">
+
+<p>輸入 GPS (lat,lon)</p>
+<textarea id="gps"></textarea>
+
+<label>中心擴展距離 (公尺)</label>
+<input id="radius" type="number" value="30"/>
+
+<div class="small">
+收果路線：每個點將隨機往外偏移 50 公尺後串聯成 GPX
+</div>
+
+<button onclick="preview()">地圖預覽</button>
+
+<button onclick="downloadOriginal()">下載 收果路線 GPX</button>
+<button onclick="downloadHex()">下載 種花路線 GPX</button>
+
+</div>
+
+<div class="right">
+<div id="map"></div>
+</div>
+
+</div>
+
+<script>
+
+let map=L.map('map').setView([20,120],4)
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+maxZoom:19
+}).addTo(map)
+
+let layers=[]
+
+function clearMap(){
+layers.forEach(l=>map.removeLayer(l))
+layers=[]
+}
+
+function parseInput(){
+
+let text=document.getElementById("gps").value.trim()
+
+let lines=text.split(/\n+/)
+
+let pts=[]
+
+lines.forEach(l=>{
+
+let p=l.split(",")
+
+if(p.length==2){
+
+let lat=parseFloat(p[0])
+let lon=parseFloat(p[1])
+
+if(!isNaN(lat)&&!isNaN(lon)){
+
+pts.push({lat:lat,lon:lon})
+
+}
+
+}
+
+})
+
+return pts
+
+}
+
+function metersToLat(m){
+
+return m/111320
+
+}
+
+function metersToLon(m,lat){
+
+return m/(111320*Math.cos(lat*Math.PI/180))
+
+}
+
+/* 每個點隨機往外偏移固定50公尺 */
+
+function randomOffsetPoint(pt,distanceMeters){
+
+// 隨機方向角度
+let angle=Math.random()*2*Math.PI
+
+// X方向位移
+let dx=distanceMeters*Math.cos(angle)
+
+// Y方向位移
+let dy=distanceMeters*Math.sin(angle)
+
+// 轉換成經緯度
+let lat=pt.lat+metersToLat(dy)
+let lon=pt.lon+metersToLon(dx,pt.lat)
+
+return {
+lat:lat,
+lon:lon
+}
+
+}
+
+function hexExpand(pt,r){
+
+let angles=[0,60,120,180,240,300]
+
+let list=[]
+
+angles.forEach((a,i)=>{
+
+let rad=a*Math.PI/180
+
+let dx=r*Math.cos(rad)
+let dy=r*Math.sin(rad)
+
+let lat=pt.lat+metersToLat(dy)
+let lon=pt.lon+metersToLon(dx,pt.lat)
+
+list.push({lat:lat,lon:lon,index:i+1})
+
+})
+
+return list
+
+}
+
+function createLabel(text){
+
+return L.divIcon({
+
+className:"",
+html:'<div class="label">'+text+'</div>',
+iconSize:[30,20]
+
+})
+
+}
+
+/* 建立種花S型路線 */
+
+function buildSnakeRoute(base,r){
+
+let route=[]
+
+base.forEach((p,i)=>{
+
+route.push([p.lat,p.lon])
+
+let hex=hexExpand(p,r)
+
+hex.forEach(h=>{
+
+route.push([h.lat,h.lon])
+
+})
+
+})
+
+return route
+
+}
+
+function preview(){
+
+clearMap()
+
+let base=parseInput()
+
+let r=parseFloat(document.getElementById("radius").value)||30
+
+if(base.length==0) return
+
+let route=[]
+
+base.forEach((p,i)=>{
+
+let marker=L.marker([p.lat,p.lon],{
+icon:createLabel(i+1)
+}).addTo(map)
+
+layers.push(marker)
+
+route.push([p.lat,p.lon])
+
+let hex=hexExpand(p,r)
+
+hex.forEach(h=>{
+
+let label=(i+1)+"-"+h.index
+
+let m=L.marker([h.lat,h.lon],{
+
+icon:createLabel(label)
+
+}).addTo(map)
+
+layers.push(m)
+
+route.push([h.lat,h.lon])
+
+})
+
+})
+
+let line=L.polyline(route,{color:"blue"}).addTo(map)
+
+layers.push(line)
+
+map.fitBounds(line.getBounds())
+
+}
+
+function buildGPX(points){
+
+let gpx='<?xml version="1.0"?>\n'
+
+gpx+='<gpx version="1.1" creator="GPSSetting">\n'
+
+gpx+='<trk><trkseg>\n'
+
+points.forEach(p=>{
+
+gpx+=`<trkpt lat="${p[0]}" lon="${p[1]}"></trkpt>\n`
+
+})
+
+gpx+='</trkseg></trk>\n'
+
+gpx+='</gpx>'
+
+return gpx
+
+}
+
+/* 國家翻譯 */
+
+function translateCountry(name){
+
+let table={
+
+"India":"印度",
+"Philippines":"菲律賓",
+"Indonesia":"印尼",
+"Thailand":"泰國",
+"Malaysia":"馬來西亞",
+"Vietnam":"越南",
+"Taiwan":"台灣",
+"Japan":"日本"
+
+}
+
+return table[name]||name
+
+}
+
+async function getCountry(lat,lon){
+
+let url=`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`
+
+let res=await fetch(url)
+
+let data=await res.json()
+
+if(data.address && data.address.country){
+
+return translateCountry(data.address.country)
+
+}
+
+return "未知地區"
+
+}
+
+/* 收果路線 GPX */
+
+async function downloadOriginal(){
+
+let pts=parseInput()
+
+if(pts.length==0) return
+
+let country=await getCountry(pts[0].lat,pts[0].lon)
+
+let count=pts.length
+
+let filename=`${country} ${count}收.gpx`
+
+let route=[]
+
+pts.forEach(p=>{
+
+// 每個點隨機偏移50公尺
+let offset=randomOffsetPoint(p,50)
+
+route.push([offset.lat,offset.lon])
+
+})
+
+let gpx=buildGPX(route)
+
+downloadFile(filename,gpx)
+
+}
+
+/* 種花路線 GPX */
+
+async function downloadHex(){
+
+let base=parseInput()
+
+let r=parseFloat(document.getElementById("radius").value)||30
+
+if(base.length==0) return
+
+let route=buildSnakeRoute(base,r)
+
+let country=await getCountry(base[0].lat,base[0].lon)
+
+let count=base.length
+
+let filename=`${country} ${count}s.gpx`
+
+let gpx=buildGPX(route)
+
+downloadFile(filename,gpx)
+
+}
+
+function downloadFile(name,content){
+
+let blob=new Blob([content],{type:"application/gpx+xml"})
+
+let url=URL.createObjectURL(blob)
+
+let a=document.createElement("a")
+
+a.href=url
+
+a.download=name
+
+a.click()
+
+URL.revokeObjectURL(url)
+
+}
+
+</script>
+
+</body>
 </html>
