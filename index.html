@@ -279,12 +279,11 @@ clearMap()
 
 let base=parseInput()
 
-let r=parseFloat(document.getElementById("radius").value)||30
-
 if(base.length==0) return
 
 let route=[]
 
+// 只顯示原始GPS點
 base.forEach((p,i)=>{
 
 let marker=L.marker([p.lat,p.lon],{
@@ -295,27 +294,17 @@ layers.push(marker)
 
 route.push([p.lat,p.lon])
 
-let hex=hexExpand(p,r)
+})
 
-hex.forEach(h=>{
+// 只連接原始GPS點
+let line=L.polyline(route,{
 
-let label=(i+1)+"-"+h.index
-
-let m=L.marker([h.lat,h.lon],{
-
-icon:createLabel(label)
+color:"#00e5ff",
+weight:5,
+opacity:0.9,
+smoothFactor:1.5
 
 }).addTo(map)
-
-layers.push(m)
-
-route.push([h.lat,h.lon])
-
-})
-
-})
-
-let line=L.polyline(route,{color:"#00e5ff",weight:5,opacity:0.9,smoothFactor:1.5}).addTo(map)
 
 layers.push(line)
 
