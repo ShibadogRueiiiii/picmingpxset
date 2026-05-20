@@ -14,10 +14,9 @@ header{background:#02C874;color:white;padding:14px;font-size:20px}
 
 .container{
 
-padding:16px;
 display:flex;
-flex-direction:column;
 gap:16px;
+padding:16px;
 height:calc(100vh - 64px);
 box-sizing:border-box;
 
@@ -43,6 +42,9 @@ padding:18px;
 border-radius:20px;
 box-shadow:0 4px 12px rgba(0,0,0,0.1);
 
+display:flex;
+flex-direction:column;
+
 }
 
 /* 右上按鈕區 */
@@ -60,27 +62,29 @@ flex-direction:column;
 gap:12px;
 
 }
-
 /* 下方地圖區 */
 
 .mapPanel{
 
+flex:1.3;
 background:white;
 padding:12px;
 border-radius:20px;
 box-shadow:0 4px 12px rgba(0,0,0,0.1);
 
-}
+display:flex;
+align-items:center;
+justify-content:center;
 
+}
 /* 地圖 */
 
 #map{
 
-height:420px;
 width:100%;
+height:100%;
 border-radius:18px;
 overflow:hidden;
-box-shadow:0 8px 24px rgba(0,0,0,0.2);
 
 }
 textarea{
@@ -129,9 +133,6 @@ cursor:pointer;transition:0.2s;box-shadow:0 6px 16px rgba(0,114,255,0.35);}
 
 <div class="container">
 
-<!-- 上方控制區 -->
-<div class="topPanel">
-
     <!-- 左邊輸入區 -->
     <div class="inputPanel">
 
@@ -153,7 +154,14 @@ cursor:pointer;transition:0.2s;box-shadow:0 6px 16px rgba(0,114,255,0.35);}
 
     </div>
 
-    <!-- 右邊按鈕區 -->
+    <!-- 中間地圖 -->
+    <div class="mapPanel">
+
+        <div id="map"></div>
+
+    </div>
+
+    <!-- 右邊功能區 -->
     <div class="buttonPanel">
 
         <button class="previewBtn" onclick="preview()">
@@ -181,15 +189,6 @@ cursor:pointer;transition:0.2s;box-shadow:0 6px 16px rgba(0,114,255,0.35);}
         </button>
 
     </div>
-
-</div>
-
-<!-- 下方地圖區 -->
-<div class="mapPanel">
-
-    <div id="map"></div>
-
-</div>
 
 </div>
 <script>
