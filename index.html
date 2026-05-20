@@ -10,13 +10,93 @@
 <style>
 body{margin:0;font-family:Arial;background:#f2f2f2}
 header{background:#02C874;color:white;padding:14px;font-size:20px}
-.container{display:flex;height:calc(100vh - 64px)}
-.left{width:360px;background:white;padding:18px;overflow:auto}
-.right{flex:1;padding:16px;box-sizing:border-box;background:#e9eef3;}
-textarea{width:90%;height:400px;padding:12px;border-radius:40px;border:1px solid #ccc;font-size:14px;}
-button{width:100%;margin-top:8px;padding:80px}
+/* 整體容器 */
+
+.container{
+
+padding:16px;
+display:flex;
+flex-direction:column;
+gap:16px;
+height:calc(100vh - 64px);
+box-sizing:border-box;
+
+}
+
+/* 上方區域 */
+
+.topPanel{
+
+display:flex;
+gap:16px;
+align-items:flex-start;
+
+}
+
+/* 左上輸入區 */
+
+.inputPanel{
+
+flex:2;
+background:white;
+padding:18px;
+border-radius:20px;
+box-shadow:0 4px 12px rgba(0,0,0,0.1);
+
+}
+
+/* 右上按鈕區 */
+
+.buttonPanel{
+
+flex:1;
+background:white;
+padding:18px;
+border-radius:20px;
+box-shadow:0 4px 12px rgba(0,0,0,0.1);
+
+display:flex;
+flex-direction:column;
+gap:12px;
+
+}
+
+/* 下方地圖區 */
+
+.mapPanel{
+
+background:white;
+padding:12px;
+border-radius:20px;
+box-shadow:0 4px 12px rgba(0,0,0,0.1);
+
+}
+
+/* 地圖 */
+
+#map{
+
+height:420px;
+width:100%;
+border-radius:18px;
+overflow:hidden;
+box-shadow:0 8px 24px rgba(0,0,0,0.2);
+
+}
+textarea{
+
+width:100%;
+height:260px;
+padding:12px;
+border-radius:18px;
+border:1px solid #ccc;
+font-size:14px;
+box-sizing:border-box;
+
+}
+button{width:100%;margin-top:8px;padding:14px}
 input{width:100%;margin-top:6px;padding:6px}
-#map{height:100%;width:100%;border-radius:18px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,0.2);}
+
 .small{font-size:12px;color:#0072E3}
 .label{background:white;color:black;border:2px solid black;border-radius:999px;padding:6px 8px;font-size:12px;font-weight:bold;box-shadow:0 2px 6px rgba(0,0,0,0.25);}
 /* 準確收果按鈕 */
@@ -49,59 +129,69 @@ cursor:pointer;transition:0.2s;box-shadow:0 6px 16px rgba(0,114,255,0.35);}
 
 <div class="container">
 
-<div class="left">
+<!-- 上方控制區 -->
+<div class="topPanel">
 
-<p>上傳 GPX 檔</p>
+    <!-- 左邊輸入區 -->
+    <div class="inputPanel">
 
-<input type="file" id="fileInput" accept=".gpx">
+        <p>上傳 GPX 檔</p>
 
-<div class="small" id="count">
-GPS點位數量：0
+        <input type="file" id="fileInput" accept=".gpx">
+
+        <div class="small" id="count">
+        GPS點位數量：0
+        </div>
+
+        <p>GPS 座標</p>
+
+        <textarea id="gps"></textarea>
+
+        <label>中心擴展距離 (公尺)</label>
+
+        <input id="radius" type="number" value="30"/>
+
+    </div>
+
+    <!-- 右邊按鈕區 -->
+    <div class="buttonPanel">
+
+        <button class="previewBtn" onclick="preview()">
+        🗺️ 地圖預覽
+        </button>
+
+        <button class="hexPreviewBtn" onclick="previewHexRoute()">
+        🌸 種花路線預覽
+        </button>
+
+        <button class="accurateBtn" onclick="downloadAccurateRoute()">
+        🎯 準確收果路線
+        </button>
+
+        <button class="fruitBtn" onclick="downloadOriginal()">
+        下載 收果路線 GPX
+        </button>
+
+        <button class="flowerBtn" onclick="downloadHex()">
+        下載 種花路線 GPX
+        </button>
+
+        <button class="allDownloadBtn" onclick="downloadAllRoutes()">
+        ⬇️ 一鍵下載 收果 + 種花
+        </button>
+
+    </div>
+
 </div>
 
-<p>GPS 座標</p>
+<!-- 下方地圖區 -->
+<div class="mapPanel">
 
-<textarea id="gps"></textarea>
-
-<label>中心擴展距離 (公尺)</label>
-<input id="radius" type="number" value="30"/>
-
-<div class="small">
-收果路線：每個點將隨機往外偏移 50 公尺後串聯成 GPX
-</div>
-
-<button class="previewBtn" onclick="preview()">
-🗺️ 地圖預覽
-</button>
-
-<button class="hexPreviewBtn" onclick="previewHexRoute()">
-🌸 種花路線預覽
-</button>
-
-<button class="accurateBtn" onclick="downloadAccurateRoute()">
-🎯 準確收果路線
-</button>
-  
-<button class="fruitBtn" onclick="downloadOriginal()">
-下載 收果路線 GPX
-</button>
-
-<button class="flowerBtn" onclick="downloadHex()">
-下載 種花路線 GPX
-</button>
-
-<button class="allDownloadBtn" onclick="downloadAllRoutes()">
-⬇️ 一鍵下載 收果 + 種花
-</button>
+    <div id="map"></div>
 
 </div>
 
-<div class="right">
-<div id="map"></div>
 </div>
-
-</div>
-
 <script>
 
 let map=L.map('map').setView([20,120],4)
