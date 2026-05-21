@@ -527,6 +527,94 @@ map.fitBounds(line.getBounds())
 
 }
 
+/* 雙路線預覽 */
+
+function previewDualRoute(){
+
+clearMap()
+
+let routeA=parseInput()
+
+let routeB=parseInput2()
+
+if(routeA.length==0 && routeB.length==0) return
+
+let bounds=[]
+
+/* A路線 */
+
+if(routeA.length>0){
+
+let lineA=[]
+
+routeA.forEach((p,i)=>{
+
+let marker=L.marker([p.lat,p.lon],{
+icon:createLabel("A"+(i+1))
+}).addTo(map)
+
+layers.push(marker)
+
+lineA.push([p.lat,p.lon])
+
+bounds.push([p.lat,p.lon])
+
+})
+
+let polyA=L.polyline(lineA,{
+
+color:"black",
+weight:4,
+opacity:0.9
+
+}).addTo(map)
+
+layers.push(polyA)
+
+}
+
+/* B路線 */
+
+if(routeB.length>0){
+
+let lineB=[]
+
+routeB.forEach((p,i)=>{
+
+let marker=L.marker([p.lat,p.lon],{
+icon:createLabel("B"+(i+1))
+}).addTo(map)
+
+layers.push(marker)
+
+lineB.push([p.lat,p.lon])
+
+bounds.push([p.lat,p.lon])
+
+})
+
+let polyB=L.polyline(lineB,{
+
+color:"red",
+weight:4,
+opacity:0.9
+
+}).addTo(map)
+
+layers.push(polyB)
+
+}
+
+/* 自動縮放 */
+
+if(bounds.length>0){
+
+map.fitBounds(bounds)
+
+}
+
+}
+
 function buildGPX(points,name){
 
 let gpx='<?xml version="1.0" encoding="UTF-8"?>\n'
