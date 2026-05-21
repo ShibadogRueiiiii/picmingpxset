@@ -122,6 +122,8 @@ cursor:pointer;transition:0.2s;box-shadow:0 6px 16px rgba(0,114,255,0.35);}
 /* 一鍵下載按鈕 */
 .allDownloadBtn{background:linear-gradient(135deg,#00c853,#64dd17);color:white;border:none;padding:14px;border-radius:14px;font-size:16px;font-weight:bold;cursor:pointer;transition:0.2s;box-shadow:0 6px 16px rgba(0,200,83,0.35);}
 .allDownloadBtn:hover{transform:translateY(-2px) scale(1.02);}
+.compareBtn{background:linear-gradient(135deg,#424242,#212121);color:white;border:none;padding:14px;border-radius:14px;font-size:16px;font-weight:bold;cursor:pointer;transition:0.2s;box-shadow:0 6px 16px rgba(0,0,0,0.35);}
+.compareBtn:hover{transform:translateY(-2px) scale(1.02);}
 </style>
 </head>
 
@@ -144,9 +146,13 @@ cursor:pointer;transition:0.2s;box-shadow:0 6px 16px rgba(0,114,255,0.35);}
         GPS點位數量：0
         </div>
 
-        <p>GPS 座標</p>
+        <p>GPS 座標 A</p>
 
-        <textarea id="gps"></textarea>
+<textarea id="gps"></textarea>
+
+<p style="margin-top:12px;">GPS 座標 B</p>
+
+<textarea id="gps2"></textarea>
 
         <label>中心擴展距離 (公尺)</label>
 
@@ -166,6 +172,10 @@ cursor:pointer;transition:0.2s;box-shadow:0 6px 16px rgba(0,114,255,0.35);}
 
         <button class="previewBtn" onclick="preview()">
         🗺️ 地圖預覽
+        </button>
+
+        <button class="compareBtn" onclick="previewDualRoute()">
+        🧭 雙路線預覽
         </button>
 
         <button class="hexPreviewBtn" onclick="previewHexRoute()">
@@ -285,7 +295,39 @@ pts.push({lat:lat,lon:lon})
 return pts
 
 }
+/* 第二組GPS解析 */
 
+function parseInput2(){
+
+let text=document.getElementById("gps2").value.trim()
+
+let lines=text.split(/\n+/)
+
+let pts=[]
+
+lines.forEach(l=>{
+
+let p=l.split(",")
+
+if(p.length==2){
+
+let lat=parseFloat(p[0])
+let lon=parseFloat(p[1])
+
+if(!isNaN(lat)&&!isNaN(lon)){
+
+pts.push({lat:lat,lon:lon})
+
+}
+
+}
+
+})
+
+return pts
+
+}
+    
 function metersToLat(m){
 
 return m/111320
