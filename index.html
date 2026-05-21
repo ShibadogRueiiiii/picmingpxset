@@ -277,7 +277,12 @@ let lines=text.split(/\n+/)
 
 let pts=[]
 
-lines.forEach(l=>{
+/* 用來檢查重複 */
+let seen={}
+
+let duplicates=[]
+
+lines.forEach((l,index)=>{
 
 let p=l.split(",")
 
@@ -288,13 +293,52 @@ let lon=parseFloat(p[1])
 
 if(!isNaN(lat)&&!isNaN(lon)){
 
-pts.push({lat:lat,lon:lon})
+/* 統一格式 */
+let key=lat.toFixed(7)+","+lon.toFixed(7)
+
+/* 檢查是否重複 */
+if(seen[key]!==undefined){
+
+duplicates.push({
+line1:seen[key]+1,
+line2:index+1,
+value:key
+})
+
+}else{
+
+seen[key]=index
+
+}
+
+/* 加入點位 */
+pts.push({
+lat:lat,
+lon:lon
+})
 
 }
 
 }
 
 })
+
+/* 發現重複 */
+
+if(duplicates.length>0){
+
+let msg="你眼睛不好輸入到重複的囉\n\n"
+
+duplicates.forEach(d=>{
+
+msg+=`第 ${d.line1} 行 與 第 ${d.line2} 行重複\n`
+msg+=`${d.value}\n\n`
+
+})
+
+alert(msg)
+
+}
 
 return pts
 
@@ -352,7 +396,12 @@ let lines=text.split(/\n+/)
 
 let pts=[]
 
-lines.forEach(l=>{
+/* 用來檢查重複 */
+let seen={}
+
+let duplicates=[]
+
+lines.forEach((l,index)=>{
 
 let p=l.split(",")
 
@@ -363,13 +412,51 @@ let lon=parseFloat(p[1])
 
 if(!isNaN(lat)&&!isNaN(lon)){
 
-pts.push({lat:lat,lon:lon})
+let key=lat.toFixed(7)+","+lon.toFixed(7)
+
+/* 檢查重複 */
+
+if(seen[key]!==undefined){
+
+duplicates.push({
+line1:seen[key]+1,
+line2:index+1,
+value:key
+})
+
+}else{
+
+seen[key]=index
+
+}
+
+pts.push({
+lat:lat,
+lon:lon
+})
 
 }
 
 }
 
 })
+
+/* 發現重複 */
+
+if(duplicates.length>0){
+
+let msg="GPS B 你眼睛不好輸入到重複的囉\n\n"
+
+duplicates.forEach(d=>{
+
+msg+=`第 ${d.line1} 行 與 第 ${d.line2} 行重複\n`
+msg+=`${d.value}\n\n`
+
+})
+
+alert(msg)
+
+}
 
 return pts
 
