@@ -335,7 +335,18 @@ msg+=`第 ${d.line1} 行 與 第 ${d.line2} 行重複\n`
 msg+=`${d.value}\n\n`
 
 })
+/* 幫重複座標加上警告符號 */
 
+let newLines=[...lines]
+
+duplicates.forEach(d=>{
+
+newLines[d.line1-1]="⚠️"+newLines[d.line1-1]
+newLines[d.line2-1]="⚠️"+newLines[d.line2-1]
+
+})
+
+document.getElementById("gps").value=newLines.join("\n")
 alert(msg)
 
 }
@@ -453,7 +464,18 @@ msg+=`第 ${d.line1} 行 與 第 ${d.line2} 行重複\n`
 msg+=`${d.value}\n\n`
 
 })
+/* 幫 GPS B 重複座標加上警告符號 */
 
+let newLines=[...lines]
+
+duplicates.forEach(d=>{
+
+newLines[d.line1-1]="⚠️"+newLines[d.line1-1]
+newLines[d.line2-1]="⚠️"+newLines[d.line2-1]
+
+})
+
+document.getElementById("gps2").value=newLines.join("\n")
 alert(msg)
 
 }
