@@ -150,6 +150,10 @@ cursor:pointer;transition:0.2s;box-shadow:0 6px 16px rgba(0,114,255,0.35);}
 
 <textarea id="gps"></textarea>
 
+<p style="margin-top:12px;">上傳 GPX 檔 B</p>
+
+<input type="file" id="fileInput2" accept=".gpx">
+
 <p style="margin-top:12px;">GPS 座標 B</p>
 
 <textarea id="gps2"></textarea>
@@ -295,6 +299,49 @@ pts.push({lat:lat,lon:lon})
 return pts
 
 }
+
+/* 第二組 GPX解析器 */
+
+document.getElementById("fileInput2").addEventListener("change", function(e){
+
+const file=e.target.files[0]
+
+if(!file) return
+
+const reader=new FileReader()
+
+reader.onload=function(event){
+
+const text=event.target.result
+
+const parser=new DOMParser()
+
+const xml=parser.parseFromString(text,"text/xml")
+
+const points=xml.querySelectorAll("trkpt,wpt,rtept")
+
+let result=[]
+
+points.forEach(p=>{
+
+let lat=p.getAttribute("lat")
+let lon=p.getAttribute("lon")
+
+if(lat && lon){
+
+result.push(lat+","+lon)
+
+}
+
+})
+
+document.getElementById("gps2").value=result.join("\n")
+
+}
+
+reader.readAsText(file)
+
+})
 /* 第二組GPS解析 */
 
 function parseInput2(){
