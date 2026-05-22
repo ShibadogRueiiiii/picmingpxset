@@ -1081,59 +1081,7 @@ publicMap.fitBounds(bounds)
 
 /* 啟動 */
 
-loadAllPublicGPX()
-/* 載入公開展示GPX */
 
-async function loadPublicGPX(){
-
-try{
-
-let res=await fetch("public.gpx")
-
-let text=await res.text()
-
-let parser=new DOMParser()
-
-let xml=parser.parseFromString(text,"text/xml")
-
-let points=xml.querySelectorAll("trkpt,rtept")
-
-let route=[]
-
-points.forEach(p=>{
-
-let lat=parseFloat(p.getAttribute("lat"))
-let lon=parseFloat(p.getAttribute("lon"))
-
-route.push([lat,lon])
-
-})
-
-if(route.length>0){
-
-let line=L.polyline(route,{
-
-color:"red",
-weight:4,
-opacity:0.9
-
-}).addTo(publicMap)
-
-publicMap.fitBounds(line.getBounds())
-
-}
-
-}catch(err){
-
-console.log("公開GPX讀取失敗")
-
-}
-
-}
-
-/* 啟動公開地圖 */
-
-loadPublicGPX()
 </script>
 
 </body>
