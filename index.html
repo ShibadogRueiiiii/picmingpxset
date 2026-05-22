@@ -1136,7 +1136,40 @@ function addRouteToPublic(route,name,color){
 
 // 拖曳區
 const dropZone = document.getElementById("dropZone")
+const publicFileInput = document.getElementById("publicFileInput")
 
+publicFileInput.addEventListener("change", function(e){
+
+    const files = e.target.files
+    if(!files.length) return
+
+    clearPublicMap()
+
+    let bounds = []
+
+    Array.from(files).forEach((file,i)=>{
+
+        if(!file.name.endsWith(".gpx")) return
+
+        const reader = new FileReader()
+
+        reader.onload = function(ev){
+
+            const route = parseGPX(ev.target.result)
+            if(route.length == 0) return
+
+            let color = colors[i % colors.length]
+
+            addRouteToPublic(route, file.name, color)
+
+            route.forEach(p => bounds.push(p))
+
+            publicMap.fitBounds(bounds)
+        }
+
+        reader.readAsText(file)
+    })
+})
 dropZone.addEventListener("dragover",e=>{
     e.preventDefault()
     dropZone.style.background = "#eaffea"
