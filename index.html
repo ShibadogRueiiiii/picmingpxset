@@ -254,17 +254,6 @@ maxZoom:19
 }
 ).addTo(map)
 
-/* 公開展示地圖 */
-
-let publicMap=L.map('publicMap').setView([14.6,120.9],7)
-
-L.tileLayer(
-'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
-{
-maxZoom:19
-}
-).addTo(publicMap)
-
 let layers=[]
 
 /* GPX解析器 */
