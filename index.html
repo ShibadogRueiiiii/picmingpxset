@@ -1103,8 +1103,6 @@ let publicLayers = []
 
 // 顏色池
 const colors = ["red","blue","green","orange","purple","black"]
-// 顏色池
-const colors = ["red","blue","green","orange","purple","black"]
 
 // ✅ 在這裡新增（GitHub固定圖資清單）
 const GITHUB_GPX_FILES = [
@@ -1251,7 +1249,9 @@ dropZone.addEventListener("drop",e=>{
 
     })
 })
+    window.addEventListener("load", () => {
     loadGithubFixedRoutes()
+})
 </script>
 
 </body>
