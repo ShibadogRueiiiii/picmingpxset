@@ -155,7 +155,7 @@ border:3px solid black;
     <div class="inputPanel">
 
         <p>上傳 GPX 檔</p>
-        <input type="file" id="fileInput" accept=".gpx">
+        <input type="file" id="publicFileInput" multiple accept=".gpx" style="display:none;">
 
         <div class="small" id="count">
             GPS點位數量：0
@@ -215,16 +215,12 @@ border:3px solid black;
 
 <h2>🗺️ 路線預覽比較區</h2>
 
-<!-- ⭐新增：檔案選擇按鈕（放這裡） -->
-<input type="file" id="publicFileInput" multiple accept=".gpx"
-style="
-margin-bottom:12px;
-padding:10px;
-border:2px solid #02C874;
-border-radius:10px;
-background:white;
-width:100%;
-">
+<!-- ⭐放這裡（選檔按鈕） -->
+<label for="publicFileInput" class="fileBtn">
+📁 選擇 GPX 檔案
+</label>
+
+<input type="file" id="publicFileInput" multiple accept=".gpx" style="display:none;">
 
 <div id="dropZone"
 style="
