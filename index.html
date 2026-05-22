@@ -2,7 +2,7 @@
 <html lang="zh">
 <head>
 <meta charset="UTF-8">
-<title>🥷柴狗畫圖時間（乾淨版）</title>
+<title>🥷柴狗畫圖時間</title>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -10,6 +10,7 @@
 <style>
 body{margin:0;font-family:Arial;background:#f2f2f2}
 header{background:#02C874;color:white;padding:14px;font-size:20px}
+/* 整體容器 */
 
 .container{
     display:grid;
@@ -18,163 +19,1260 @@ header{background:#02C874;color:white;padding:14px;font-size:20px}
     padding:16px;
 }
 
-.inputPanel,.buttonPanel,.mainMapSection,.publicMapSection{
-    background:white;
-    padding:16px;
-    border-radius:16px;
-    box-shadow:0 4px 12px rgba(0,0,0,0.1);
+/* 上方區域 */
+
+.topPanel{
+
+display:flex;
+gap:16px;
+align-items:stretch;
+
 }
 
-textarea{width:100%;height:200px}
+/* 左上輸入區 */
 
-#map,#publicMap,#githubMap{
+.inputPanel{
+
+flex:1;
+background:white;
+padding:18px;
+border-radius:20px;
+box-shadow:0 4px 12px rgba(0,0,0,0.1);
+
+display:flex;
+flex-direction:column;
+
+}
+
+/* 右上按鈕區 */
+
+.buttonPanel{
+
+flex:1;
+background:white;
+padding:18px;
+border-radius:20px;
+box-shadow:0 4px 12px rgba(0,0,0,0.1);
+
+display:flex;
+flex-direction:column;
+gap:12px;
+
+}
+/* 下方地圖區 */
+textarea{
+
+width:100%;
+height:300px;
+padding:12px;
+border-radius:18px;
+border:1px solid #ccc;
+font-size:14px;
+box-sizing:border-box;
+
+}
+button{width:100%;margin-top:8px;padding:14px}
+input{width:100%;margin-top:6px;padding:6px}
+
+.small{font-size:12px;color:#0072E3}
+.label{background:white;color:black;border:2px solid black;border-radius:999px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:bold;box-shadow:0 2px 6px rgba(0,0,0,0.25);}
+/* 準確收果按鈕 */
+.accurateBtn{background:linear-gradient(135deg,#ff9800,#ff5722);color:white;border:none;padding:14px;border-radius:14px;font-size:16px;font-weight:bold;cursor:pointer;transition:0.2s;box-shadow:0 6px 16px rgba(255,87,34,0.35);}
+.accurateBtn:hover{transform:translateY(-2px) scale(1.02);}
+/* 收果路線按鈕 */
+.fruitBtn{background:#ff9800;color:white;border:none;padding:12px;border-radius:12px;font-size:15px;font-weight:bold;box-shadow:0 4px 10px rgba(255,152,0,0.4);}
+.fruitBtn:hover{background:#ffb74d;transform:scale(1.03);}
+/* 種花路線按鈕 */
+.flowerBtn{background:#e91e63;color:white;border:none;padding:12px;border-radius:12px;font-size:15px;font-weight:bold;box-shadow:0 4px 10px rgba(233,30,99,0.4);}
+.flowerBtn:hover{background:#f06292;transform:scale(1.03);}
+/* 地圖預覽按鈕 */
+.previewBtn{background:linear-gradient(135deg,#00c6ff,#0072ff);color:white;border:none;padding:14px;border-radius:14px;font-size:16px;font-weight:bold;
+cursor:pointer;transition:0.2s;box-shadow:0 6px 16px rgba(0,114,255,0.35);}
+.previewBtn:hover{transform:translateY(-2px) scale(1.02);box-shadow:0 10px 22px rgba(0,114,255,0.45);}
+/* 種花預覽按鈕 */
+.hexPreviewBtn{background:#8e24aa;color:white;border:none;padding:12px;border-radius:14px;font-size:15px;font-weight:bold;cursor:pointer;transition:0.2s;box-shadow:0 4px 12px rgba(142,36,170,0.35);}
+.hexPreviewBtn:hover{transform:scale(1.03);background:#ab47bc;}
+/* 一鍵下載按鈕 */
+.allDownloadBtn{background:linear-gradient(135deg,#00c853,#64dd17);color:white;border:none;padding:14px;border-radius:14px;font-size:16px;font-weight:bold;cursor:pointer;transition:0.2s;box-shadow:0 6px 16px rgba(0,200,83,0.35);}
+.allDownloadBtn:hover{transform:translateY(-2px) scale(1.02);}
+.compareBtn{background:linear-gradient(135deg,#424242,#212121);color:white;border:none;padding:14px;border-radius:14px;font-size:16px;font-weight:bold;cursor:pointer;transition:0.2s;box-shadow:0 6px 16px rgba(0,0,0,0.35);}
+.compareBtn:hover{transform:translateY(-2px) scale(1.02);}
+/* 公開展示地圖 */
+
+.publicMapSection{
+
+margin:20px;
+background:white;
+padding:20px;
+border-radius:20px;
+box-shadow:0 4px 12px rgba(0,0,0,0.1);
+
+}
+
+#publicMap{
+
+width:100%;
+height:850px;
+border-radius:20px;
+overflow:hidden;
+border:3px solid black;
+box-shadow:0 8px 24px rgba(0,0,0,0.2);
+
+}
+    /* 主展示地圖 */
+
+.mainMapSection{
+
+margin:20px;
+background:white;
+padding:20px;
+border-radius:24px;
+box-shadow:0 4px 16px rgba(0,0,0,0.12);
+
+}
+
+#map{
+
+width:100%;
+height:700px;
+border-radius:20px;
+overflow:hidden;
+border:3px solid black;
+
+}
+#githubMap{
     width:100%;
-    height:600px;
-    border:2px solid #000;
-    border-radius:12px;
+    height:650px;
+    border-radius:20px;
+    overflow:hidden;
+    border:3px solid black;
 }
-
-button{width:100%;margin-top:8px;padding:10px}
 </style>
 </head>
 
 <body>
 
-<header>🥷乾淨版 GPS 工具</header>
+<header>
+🥷鑰匙神偷做的啦
+</header>
 
 <div class="container">
 
-<!-- 左 -->
-<div class="inputPanel">
-<p>GPS A</p>
-<textarea id="gps"></textarea>
+    <!-- 左邊：輸入區 -->
+    <div class="inputPanel">
 
-<p>GPS B</p>
-<textarea id="gps2"></textarea>
+        <p>上傳 GPX 檔</p>
+        <input type="file" id="fileInput" accept=".gpx">
 
-<input type="number" id="radius" value="30">
+        <div class="small" id="count">
+            GPS點位數量：0
+        </div>
+
+        <p>GPS 座標 A</p>
+        <textarea id="gps"></textarea>
+
+        <p style="margin-top:12px;">上傳 GPX 檔 B</p>
+        <input type="file" id="fileInput2" accept=".gpx">
+
+        <p style="margin-top:12px;">GPS 座標 B</p>
+        <textarea id="gps2"></textarea>
+
+        <label>中心擴展距離 (公尺)</label>
+        <input id="radius" type="number" value="30"/>
+
+        <label>自定義檔名</label>
+        <input id="customName" type="text" placeholder="例如：印尼100">
+
+    </div>
+
+    <!-- 中間：主地圖 -->
+    <div class="mainMapSection">
+
+        <h2>🗺️ GPS 路線總覽地圖</h2>
+
+        <div id="map"></div>
+
+    </div>
+
+    <!-- 右邊：按鈕區 -->
+    <div class="buttonPanel">
+
+        <button class="previewBtn" onclick="preview()">🗺️ 地圖預覽</button>
+
+        <button class="compareBtn" onclick="previewDualRoute()">🧭 雙路線預覽</button>
+
+        <button class="hexPreviewBtn" onclick="previewHexRoute()">🌸 種花路線預覽</button>
+
+        <button class="accurateBtn" onclick="downloadAccurateRoute()">🎯 準確收果路線</button>
+
+        <button class="fruitBtn" onclick="downloadOriginal()">🎲 隨機收果路線 GPX</button>
+
+        <button class="flowerBtn" onclick="downloadHex()">💐 種花路線 GPX</button>
+
+        <button class="allDownloadBtn" onclick="downloadAllRoutes()">⬇️ 一鍵下載 收果 + 種花</button>
+
+    </div>
+
 </div>
 
-<!-- 中 -->
-<div class="mainMapSection">
-<h3>主地圖</h3>
-<div id="map"></div>
-</div>
 
-<!-- 右 -->
-<div class="buttonPanel">
-<button onclick="preview()">預覽 A</button>
-<button onclick="previewDual()">雙路線</button>
-</div>
-
-</div>
+<!-- 公開展示地圖 -->
 
 <div class="publicMapSection">
-<h3>公開地圖</h3>
+
+<h2>🗺️ 公開展示總覽地圖</h2>
+<div id="dropZone"
+style="
+border:2px dashed #02C874;
+padding:14px;
+border-radius:12px;
+text-align:center;
+margin-bottom:12px;
+color:#02C874;
+font-weight:bold;
+cursor:pointer;
+background:#f9fff9;
+">
+⬆️ 拖曳 GPX 檔案到這裡（公開地圖即時更新）
+</div>
+
 <div id="publicMap"></div>
-</div>
 
+</div>
 <div class="publicMapSection">
-<h3>GitHub 地圖</h3>
-<div id="githubMap"></div>
-</div>
-
+    <h2>🗂️ GitHub 固定圖資（只讀）</h2>
+    <div id="githubMap"></div>
+</div>    
+    
+<script src="gpx-list.js"></script>
 <script>
-/* =========================
-   全域變數（只宣告一次）
-========================= */
-let map, publicMap, githubMap;
-let layers = [];
-let publicLayers = [];
-let githubLayers = [];
 
-/* =========================
-   初始化（唯一入口）
-========================= */
+/* 主地圖 */
+
+let map=L.map('map').setView([20,120],4)
+
+L.tileLayer(
+'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
+{
+maxZoom:19
+}
+).addTo(map)
+
+let layers=[]
+
+/* GPX解析器 */
+
+document.getElementById("fileInput").addEventListener("change", function(e){
+
+const file=e.target.files[0]
+
+if(!file) return
+
+const reader=new FileReader()
+
+reader.onload=function(event){
+
+const text=event.target.result
+
+const parser=new DOMParser()
+
+const xml=parser.parseFromString(text,"text/xml")
+
+const points=xml.querySelectorAll("trkpt,wpt,rtept")
+
+let result=[]
+
+points.forEach(p=>{
+
+let lat=p.getAttribute("lat")
+let lon=p.getAttribute("lon")
+
+if(lat && lon){
+
+result.push(lat+","+lon)
+
+}
+
+})
+
+document.getElementById("gps").value=result.join("\n")
+
+document.getElementById("count").innerText=
+"GPS點位數量："+result.length
+
+}
+
+reader.readAsText(file)
+
+})
+
+function clearMap(){
+layers.forEach(l=>map.removeLayer(l))
+layers=[]
+}
+
+function parseInput(){
+
+let text=document.getElementById("gps").value.trim()
+
+let lines=text.split(/\n+/)
+
+let pts=[]
+
+/* 用來檢查重複 */
+let seen={}
+
+let duplicates=[]
+
+lines.forEach((l,index)=>{
+
+let p=l.split(",")
+
+if(p.length==2){
+
+let lat=parseFloat(p[0])
+let lon=parseFloat(p[1])
+
+if(!isNaN(lat)&&!isNaN(lon)){
+
+/* 統一格式 */
+let key=lat.toFixed(7)+","+lon.toFixed(7)
+
+/* 檢查是否重複 */
+if(seen[key]!==undefined){
+
+duplicates.push({
+line1:seen[key]+1,
+line2:index+1,
+value:key
+})
+
+}else{
+
+seen[key]=index
+
+}
+
+/* 加入點位 */
+pts.push({
+lat:lat,
+lon:lon
+})
+
+}
+
+}
+
+})
+
+/* 發現重複 */
+
+if(duplicates.length>0){
+
+let msg="你眼睛不好輸入到重複的了 給我去改掉\n\n"
+
+duplicates.forEach(d=>{
+
+msg+=`第 ${d.line1} 行 與 第 ${d.line2} 行重複\n`
+msg+=`${d.value}\n\n`
+
+})
+/* 幫重複座標加上警告符號 */
+
+let newLines=[...lines]
+
+duplicates.forEach(d=>{
+
+newLines[d.line1-1]="⚠️"+newLines[d.line1-1]
+newLines[d.line2-1]="⚠️"+newLines[d.line2-1]
+
+})
+
+document.getElementById("gps").value=newLines.join("\n")
+alert(msg)
+
+}
+
+return pts
+
+}
+
+/* 第二組 GPX解析器 */
+
+document.getElementById("fileInput2").addEventListener("change", function(e){
+
+const file=e.target.files[0]
+
+if(!file) return
+
+const reader=new FileReader()
+
+reader.onload=function(event){
+
+const text=event.target.result
+
+const parser=new DOMParser()
+
+const xml=parser.parseFromString(text,"text/xml")
+
+const points=xml.querySelectorAll("trkpt,wpt,rtept")
+
+let result=[]
+
+points.forEach(p=>{
+
+let lat=p.getAttribute("lat")
+let lon=p.getAttribute("lon")
+
+if(lat && lon){
+
+result.push(lat+","+lon)
+
+}
+
+})
+
+document.getElementById("gps2").value=result.join("\n")
+
+}
+
+reader.readAsText(file)
+
+})
+/* 第二組GPS解析 */
+
+function parseInput2(){
+
+let text=document.getElementById("gps2").value.trim()
+
+let lines=text.split(/\n+/)
+
+let pts=[]
+
+/* 用來檢查重複 */
+let seen={}
+
+let duplicates=[]
+
+lines.forEach((l,index)=>{
+
+let p=l.split(",")
+
+if(p.length==2){
+
+let lat=parseFloat(p[0])
+let lon=parseFloat(p[1])
+
+if(!isNaN(lat)&&!isNaN(lon)){
+
+let key=lat.toFixed(7)+","+lon.toFixed(7)
+
+/* 檢查重複 */
+
+if(seen[key]!==undefined){
+
+duplicates.push({
+line1:seen[key]+1,
+line2:index+1,
+value:key
+})
+
+}else{
+
+seen[key]=index
+
+}
+
+pts.push({
+lat:lat,
+lon:lon
+})
+
+}
+
+}
+
+})
+
+/* 發現重複 */
+
+if(duplicates.length>0){
+
+let msg="GPS B 你眼睛不好輸入到重複的了 給我去改掉\n\n"
+
+duplicates.forEach(d=>{
+
+msg+=`第 ${d.line1} 行 與 第 ${d.line2} 行重複\n`
+msg+=`${d.value}\n\n`
+
+})
+/* 幫 GPS B 重複座標加上警告符號 */
+
+let newLines=[...lines]
+
+duplicates.forEach(d=>{
+
+newLines[d.line1-1]="⚠️"+newLines[d.line1-1]
+newLines[d.line2-1]="⚠️"+newLines[d.line2-1]
+
+})
+
+document.getElementById("gps2").value=newLines.join("\n")
+alert(msg)
+
+}
+
+return pts
+
+}
+    
+function metersToLat(m){
+
+return m/111320
+
+}
+
+function metersToLon(m,lat){
+
+return m/(111320*Math.cos(lat*Math.PI/180))
+
+}
+
+/* 每個點隨機往外偏移固定50公尺 */
+
+function randomOffsetPoint(pt,distanceMeters){
+
+// 隨機方向角度
+let angle=Math.random()*2*Math.PI
+
+// X方向位移
+let dx=distanceMeters*Math.cos(angle)
+
+// Y方向位移
+let dy=distanceMeters*Math.sin(angle)
+
+// 轉換成經緯度
+let lat=pt.lat+metersToLat(dy)
+let lon=pt.lon+metersToLon(dx,pt.lat)
+
+return {
+lat:lat,
+lon:lon
+}
+
+}
+
+function hexExpand(pt,r){
+
+let angles=[0,60,120,180,240,300]
+
+let list=[]
+
+angles.forEach((a,i)=>{
+
+let rad=a*Math.PI/180
+
+let dx=r*Math.cos(rad)
+let dy=r*Math.sin(rad)
+
+let lat=pt.lat+metersToLat(dy)
+let lon=pt.lon+metersToLon(dx,pt.lat)
+
+list.push({lat:lat,lon:lon,index:i+1})
+
+})
+
+return list
+
+}
+
+function createLabel(text){
+
+return L.divIcon({
+
+className:"",
+html:'<div class="label">'+text+'</div>',
+iconSize:[30,20]
+
+})
+
+}
+
+/* 建立種花S型路線 */
+
+function buildSnakeRoute(base,r){
+
+let route=[]
+
+base.forEach((p,i)=>{
+
+route.push([p.lat,p.lon])
+
+let hex=hexExpand(p,r)
+
+hex.forEach(h=>{
+
+route.push([h.lat,h.lon])
+
+})
+
+})
+
+// 最後回到最後一個原始GPS點
+let last=base[base.length-1]
+
+route.push([last.lat,last.lon])
+
+return route
+
+}
+
+function preview(){
+
+clearMap()
+
+let base=parseInput()
+
+if(base.length==0) return
+
+let route=[]
+
+// 只顯示原始GPS點
+base.forEach((p,i)=>{
+
+let marker=L.marker([p.lat,p.lon],{
+icon:createLabel(i+1)
+}).addTo(map)
+
+layers.push(marker)
+
+route.push([p.lat,p.lon])
+
+})
+
+// 只連接原始GPS點
+let line=L.polyline(route,{
+
+color:"black",
+weight:4,
+opacity:0.9,
+smoothFactor:1.5
+
+}).addTo(map)
+
+layers.push(line)
+
+map.fitBounds(line.getBounds())
+
+}
+/* 種花路線預覽 */
+
+function previewHexRoute(){
+
+clearMap()
+
+let base=parseInput()
+
+let r=parseFloat(document.getElementById("radius").value)||30
+
+if(base.length==0) return
+
+let route=[]
+
+base.forEach((p,i)=>{
+
+// 主點
+let marker=L.marker([p.lat,p.lon],{
+icon:createLabel(i+1)
+}).addTo(map)
+
+layers.push(marker)
+
+route.push([p.lat,p.lon])
+
+// 六角點
+let hex=hexExpand(p,r)
+
+hex.forEach(h=>{
+
+let label=(i+1)+"-"+h.index
+
+let m=L.marker([h.lat,h.lon],{
+icon:createLabel(label)
+}).addTo(map)
+
+layers.push(m)
+
+route.push([h.lat,h.lon])
+
+})
+
+})
+
+// 路線
+let line=L.polyline(route,{
+
+color:"#e91e63",
+weight:4,
+opacity:0.9,
+smoothFactor:1.5
+
+}).addTo(map)
+
+layers.push(line)
+
+map.fitBounds(line.getBounds())
+
+}
+
+/* 雙路線預覽 */
+
+function previewDualRoute(){
+
+clearMap()
+
+let routeA=parseInput()
+
+let routeB=parseInput2()
+
+if(routeA.length==0 && routeB.length==0) return
+
+let bounds=[]
+
+/* A路線 */
+
+if(routeA.length>0){
+
+let lineA=[]
+
+routeA.forEach((p,i)=>{
+
+let marker=L.marker([p.lat,p.lon],{
+icon:createLabel("A"+(i+1))
+}).addTo(map)
+
+layers.push(marker)
+
+lineA.push([p.lat,p.lon])
+
+bounds.push([p.lat,p.lon])
+
+})
+
+let polyA=L.polyline(lineA,{
+
+color:"black",
+weight:4,
+opacity:0.9
+
+}).addTo(map)
+
+layers.push(polyA)
+
+}
+
+/* B路線 */
+
+if(routeB.length>0){
+
+let lineB=[]
+
+routeB.forEach((p,i)=>{
+
+let marker=L.marker([p.lat,p.lon],{
+icon:createLabel("B"+(i+1))
+}).addTo(map)
+
+layers.push(marker)
+
+lineB.push([p.lat,p.lon])
+
+bounds.push([p.lat,p.lon])
+
+})
+
+let polyB=L.polyline(lineB,{
+
+color:"red",
+weight:4,
+opacity:0.9
+
+}).addTo(map)
+
+layers.push(polyB)
+
+}
+
+/* 自動縮放 */
+
+if(bounds.length>0){
+
+map.fitBounds(bounds)
+
+}
+
+}
+
+function buildGPX(points,name){
+
+let gpx='<?xml version="1.0" encoding="UTF-8"?>\n'
+
+gpx+='<gpx version="1.1" creator="GPSSetting">\n'
+
+gpx+='<rte>\n'
+
+gpx+=`<name>${name}</name>\n`
+
+gpx+='<number>0</number>\n'
+
+points.forEach(p=>{
+
+gpx+=`<rtept lat="${p[0]}" lon="${p[1]}"></rtept>\n`
+
+})
+
+gpx+='</rte>\n'
+
+gpx+='</gpx>'
+
+return gpx
+
+}
+
+/* 國家翻譯 */
+
+function translateCountry(name){
+
+let table={
+
+"India":"印度",
+"Philippines":"菲律賓",
+"Indonesia":"印尼",
+"Thailand":"泰國",
+"Malaysia":"馬來西亞",
+"Vietnam":"越南",
+"Taiwan":"台灣",
+"Japan":"日本"
+
+}
+
+return table[name]||name
+
+}
+
+async function getCountry(lat,lon){
+
+let url=`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`
+
+let res=await fetch(url)
+
+let data=await res.json()
+
+if(data.address && data.address.country){
+
+return translateCountry(data.address.country)
+
+}
+
+return "未知地區"
+
+}
+
+/* 準確收果路線 */
+
+async function downloadAccurateRoute(){
+
+let pts=parseInput()
+
+if(pts.length==0) return
+
+let country=await getCountry(pts[0].lat,pts[0].lon)
+
+let count=pts.length
+
+let custom=document.getElementById("customName").value.trim()
+
+let baseName=custom || country
+
+let filename=`${baseName} ${count}準確收.gpx`
+
+let route=[]
+
+// 完全使用原始GPS
+pts.forEach(p=>{
+
+route.push([p.lat,p.lon])
+
+})
+
+// 最後回到最後原始點
+let last=pts[pts.length-1]
+
+route.push([last.lat,last.lon])
+
+let gpx=buildGPX(route,filename.replace(".gpx",""))
+
+downloadFile(filename,gpx)
+
+}
+
+/* 收果路線 GPX */
+
+async function downloadOriginal(){
+
+let pts=parseInput()
+
+if(pts.length==0) return
+
+let country=await getCountry(pts[0].lat,pts[0].lon)
+
+let count=pts.length
+
+let custom=document.getElementById("customName").value.trim()
+
+let baseName=custom || country
+
+let filename=`${baseName} ${count}收.gpx`
+
+let route=[]
+
+pts.forEach(p=>{
+
+// 每個點隨機偏移50公尺
+let offset=randomOffsetPoint(p,50)
+
+route.push([offset.lat,offset.lon])
+
+})
+
+// 最後回到最後一個原始GPS點
+let last=pts[pts.length-1]
+
+route.push([last.lat,last.lon])
+
+let gpx=buildGPX(route,filename.replace(".gpx",""))
+
+downloadFile(filename,gpx)
+
+}
+
+/* 種花路線 GPX */
+
+async function downloadHex(){
+
+let base=parseInput()
+
+let r=parseFloat(document.getElementById("radius").value)||30
+
+if(base.length==0) return
+
+let route=buildSnakeRoute(base,r)
+
+let country=await getCountry(base[0].lat,base[0].lon)
+
+let count=base.length
+
+let custom=document.getElementById("customName").value.trim()
+
+let baseName=custom || country
+
+let filename=`${baseName} ${count}種花.gpx`
+
+let gpx=buildGPX(route,filename.replace(".gpx",""))
+
+downloadFile(filename,gpx)
+
+}
+/* 一鍵下載 收果 + 種花 */
+
+async function downloadAllRoutes(){
+
+await downloadOriginal()
+
+setTimeout(async ()=>{
+
+await downloadHex()
+
+},500)
+
+}
+
+function downloadFile(name,content){
+
+let blob=new Blob([content],{type:"application/gpx+xml"})
+
+let url=URL.createObjectURL(blob)
+
+let a=document.createElement("a")
+
+a.href=url
+
+a.download=name
+
+a.click()
+
+URL.revokeObjectURL(url)
+
+}
+
+
+/* 載入全部公開GPX */
+
+async function loadAllPublicGPX(){
+
+let bounds=[]
+
+for(let item of GPX_FILES){
+
+try{
+
+let res=await fetch(item.file)
+
+let text=await res.text()
+
+let parser=new DOMParser()
+
+let xml=parser.parseFromString(text,"text/xml")
+
+let points=xml.querySelectorAll("trkpt,rtept")
+
+let route=[]
+
+points.forEach(p=>{
+
+let lat=parseFloat(p.getAttribute("lat"))
+let lon=parseFloat(p.getAttribute("lon"))
+
+route.push([lat,lon])
+
+bounds.push([lat,lon])
+
+})
+
+if(route.length>0){
+
+let line=L.polyline(route,{
+
+color:item.color,
+weight:4,
+opacity:0.9
+
+}).addTo(publicMap)
+
+/* 點擊顯示檔名 */
+
+line.bindPopup(item.file)
+
+}
+
+}catch(err){
+
+console.log(item.file+" 載入失敗")
+
+}
+
+}
+
+/* 自動縮放 */
+
+if(bounds.length>0){
+
+publicMap.fitBounds(bounds)
+
+}
+
+}
+
+/* 啟動 */
+
+let map;
+let publicMap;
+let githubMap;
+
+let githubLayers = [];
+let publicLayers = [];
+
 window.addEventListener("load", () => {
 
-    map = L.map('map').setView([20,120],4);
-    publicMap = L.map('publicMap').setView([20,120],4);
-    githubMap = L.map('githubMap').setView([20,120],4);
+    // 主地圖
+    map = L.map('map').setView([20,120],4)
 
-    const tile = {
-        maxZoom:19
-    };
+    L.tileLayer(
+        'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
+        { maxZoom: 19 }
+    ).addTo(map)
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', tile).addTo(map);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', tile).addTo(publicMap);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', tile).addTo(githubMap);
-});
+    // 公開地圖
+    publicMap = L.map('publicMap').setView([20,120],4)
 
-/* =========================
-   工具
-========================= */
-function clearMap(){
-    layers.forEach(l=>map.removeLayer(l));
-    layers=[];
+    L.tileLayer(
+        'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
+        { maxZoom: 19 }
+    ).addTo(publicMap)
+
+    // GitHub 地圖
+    githubMap = L.map('githubMap').setView([20,120],4)
+
+    L.tileLayer(
+        'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
+        { maxZoom: 19 }
+    ).addTo(githubMap)
+
+    // 載入 GitHub 固定圖資
+    loadGithubFixedRoutes()
+})
+
+// 顏色池
+const colors = ["red","blue","green","orange","purple","black"]
+
+// ✅ 在這裡新增（GitHub固定圖資清單）
+const GITHUB_GPX_FILES = [
+    {
+        name: "主路線A",
+        file: "https://raw.githubusercontent.com/你的帳號/你的repo/main/a.gpx",
+        color: "red"
+    },
+    {
+        name: "副路線B",
+        file: "https://raw.githubusercontent.com/你的帳號/你的repo/main/b.gpx",
+        color: "blue"
+    }
+]
+// 清除公開圖層
+function clearPublicMap(){
+    publicLayers.forEach(l => publicMap.removeLayer(l))
+    publicLayers = []
 }
 
-function parseInput(id){
-    return document.getElementById(id).value
-        .trim()
-        .split("\n")
-        .map(l=>l.split(","))
-        .filter(p=>p.length==2)
-        .map(p=>({lat:+p[0],lon:+p[1]}));
+// 解析 GPX
+function parseGPX(text){
+    const parser = new DOMParser()
+    const xml = parser.parseFromString(text,"text/xml")
+    const pts = xml.querySelectorAll("trkpt,rtept")
+
+    let route = []
+
+    pts.forEach(p=>{
+        let lat = parseFloat(p.getAttribute("lat"))
+        let lon = parseFloat(p.getAttribute("lon"))
+        if(!isNaN(lat) && !isNaN(lon)){
+            route.push([lat,lon])
+        }
+    })
+
+    return route
+}
+function clearGithubMap(){
+    githubLayers.forEach(l => githubMap.removeLayer(l))
+    githubLayers = []
 }
 
-/* =========================
-   基本預覽
-========================= */
-function preview(){
-    clearMap();
-    let pts = parseInput("gps");
-    if(!pts.length) return;
+async function loadGithubFixedRoutes(){
 
-    let line=[];
+    clearGithubMap()
 
-    pts.forEach((p,i)=>{
-        L.marker([p.lat,p.lon]).addTo(map);
-        line.push([p.lat,p.lon]);
-    });
+    let bounds = []
 
-    let poly = L.polyline(line,{color:"black"}).addTo(map);
-    map.fitBounds(poly.getBounds());
-}
+    for(let item of GITHUB_GPX_FILES){
 
-/* =========================
-   雙路線
-========================= */
-function previewDual(){
-    clearMap();
+        try{
 
-    let A = parseInput("gps");
-    let B = parseInput("gps2");
+            let res = await fetch(item.file)
+            let text = await res.text()
 
-    let all=[];
+            let route = parseGPX(text)
 
-    if(A.length){
-        let lineA=[];
-        A.forEach(p=>{
-            L.marker([p.lat,p.lon]).addTo(map);
-            lineA.push([p.lat,p.lon]);
-            all.push([p.lat,p.lon]);
-        });
-        L.polyline(lineA,{color:"black"}).addTo(map);
+            if(route.length == 0) continue
+
+            let line = L.polyline(route,{
+                color:item.color,
+                weight:4,
+                opacity:0.9
+            }).addTo(githubMap)
+
+            line.bindPopup(item.name)
+
+            githubLayers.push(line)
+
+            route.forEach(p => bounds.push(p))
+
+        }catch(err){
+            console.log("載入失敗:", item.file)
+        }
     }
 
-    if(B.length){
-        let lineB=[];
-        B.forEach(p=>{
-            L.marker([p.lat,p.lon]).addTo(map);
-            lineB.push([p.lat,p.lon]);
-            all.push([p.lat,p.lon]);
-        });
-        L.polyline(lineB,{color:"red"}).addTo(map);
+    if(bounds.length > 0){
+        githubMap.fitBounds(bounds)
     }
-
-    if(all.length) map.fitBounds(all);
 }
+// 加入路線
+function addRouteToPublic(route,name,color){
+
+    let line = L.polyline(route,{
+        color:color,
+        weight:4,
+        opacity:0.9
+    }).addTo(publicMap)
+
+    line.bindPopup(name)
+
+    publicLayers.push(line)
+}
+
+// 拖曳區
+const dropZone = document.getElementById("dropZone")
+
+dropZone.addEventListener("dragover",e=>{
+    e.preventDefault()
+    dropZone.style.background = "#eaffea"
+})
+
+dropZone.addEventListener("dragleave",e=>{
+    dropZone.style.background = "#f9fff9"
+})
+
+dropZone.addEventListener("drop",e=>{
+    e.preventDefault()
+
+    dropZone.style.background = "#f9fff9"
+
+    const files = e.dataTransfer.files
+
+    if(!files.length) return
+
+    clearPublicMap()
+
+    let bounds = []
+
+    Array.from(files).forEach((file,i)=>{
+
+        if(!file.name.endsWith(".gpx")) return
+
+        const reader = new FileReader()
+
+        reader.onload = function(ev){
+
+            const route = parseGPX(ev.target.result)
+
+            if(route.length==0) return
+
+            let color = colors[i % colors.length]
+
+            addRouteToPublic(route,file.name,color)
+
+            route.forEach(p=>bounds.push(p))
+
+            publicMap.fitBounds(bounds)
+
+        }
+
+        reader.readAsText(file)
+
+    })
+})
+    window.addEventListener("load", () => {
+    loadGithubFixedRoutes()
+})
 </script>
 
 </body>
