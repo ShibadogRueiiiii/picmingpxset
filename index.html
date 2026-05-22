@@ -1,3 +1,4 @@
+以下是我的專案
 <!DOCTYPE html>
 <html lang="zh">
 <head>
@@ -212,24 +213,27 @@ border:3px solid black;
 <!-- 公開展示地圖 -->
 
 <div class="publicMapSection">
-  <h2>🗺️ 公開展示總覽地圖</h2>
 
-  <div id="dropZone">...</div>
-
-  <div id="publicMap"></div>
+<h2>🗺️ 公開展示總覽地圖</h2>
+<div id="dropZone"
+style="
+border:2px dashed #02C874;
+padding:14px;
+border-radius:12px;
+text-align:center;
+margin-bottom:12px;
+color:#02C874;
+font-weight:bold;
+cursor:pointer;
+background:#f9fff9;
+">
+⬆️ 拖曳 GPX 檔案到這裡（公開地圖即時更新）
 </div>
 
-<!-- ⭐只讀地圖（一定要在這裡） -->
-<div class="readonlyMapSection">
-  <h2>🔒 GPX 只讀總覽地圖</h2>
-
-  <!-- ⭐ 在這裡加上傳 -->
-  <input type="file" id="gpxBatch" multiple accept=".gpx">
-
-  <!-- 地圖 -->
-  <div id="readonlyMap" style="height:700px;"></div>
+<div id="publicMap"></div>
 
 </div>
+    
 <script src="gpx-list.js"></script>
 <script>
 
@@ -1079,57 +1083,7 @@ L.tileLayer(
 ).addTo(publicMap)
 
 let publicLayers = []
-// ⭐⭐⭐ 就是把「只讀地圖」放這裡 ⭐⭐⭐
 
-// ===== 只讀地圖（你要新增的）=====
-let readonlyMap = L.map('readonlyMap').setView([20,120],4)
-let readonlyLayers = []
-
-function clearReadonlyMap(){
-    readonlyLayers.forEach(l => readonlyMap.removeLayer(l))
-    readonlyLayers = []
-}
-L.tileLayer(
-'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
-{ maxZoom: 19 }
-).addTo(readonlyMap)
-
-let readonlyLayers = []
-document.getElementById("gpxBatch").addEventListener("change", async function(e){
-
-    const files = Array.from(e.target.files)
-
-    clearReadonlyMap()
-
-    let bounds = []
-
-    for(let i=0;i<files.length;i++){
-
-        const file = files[i]
-
-        const text = await file.text()
-
-        const route = parseGPX(text)
-
-        if(route.length === 0) continue
-
-        let color = colors[i % colors.length]
-
-        let line = L.polyline(route,{
-            color:color,
-            weight:3,
-            opacity:0.9
-        }).addTo(readonlyMap)
-
-        readonlyLayers.push(line)
-
-        route.forEach(p=>bounds.push(p))
-    }
-
-    if(bounds.length){
-        readonlyMap.fitBounds(bounds)
-    }
-})
 // 顏色池
 const colors = ["red","blue","green","orange","purple","black"]
 
@@ -1227,3 +1181,11 @@ dropZone.addEventListener("drop",e=>{
 
 </body>
 </html>
+
+如果我想在最下面新增一個區塊
+裡面會擺上只能觀看的GPX預覽地圖
+這樣是可行的嗎
+然後同時還有一個問題
+我該如設定這些路線
+比如說我上傳50個GPX檔案
+想讓他們同時展示在只能觀看的預覽地圖上
