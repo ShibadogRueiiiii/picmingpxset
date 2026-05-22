@@ -124,6 +124,25 @@ cursor:pointer;transition:0.2s;box-shadow:0 6px 16px rgba(0,114,255,0.35);}
 .allDownloadBtn:hover{transform:translateY(-2px) scale(1.02);}
 .compareBtn{background:linear-gradient(135deg,#424242,#212121);color:white;border:none;padding:14px;border-radius:14px;font-size:16px;font-weight:bold;cursor:pointer;transition:0.2s;box-shadow:0 6px 16px rgba(0,0,0,0.35);}
 .compareBtn:hover{transform:translateY(-2px) scale(1.02);}
+/* 公開展示地圖 */
+
+.publicMapSection{
+
+margin:20px;
+background:white;
+padding:20px;
+border-radius:20px;
+box-shadow:0 4px 12px rgba(0,0,0,0.1);
+
+}
+
+#publicMap{
+
+height:400px;
+border-radius:18px;
+overflow:hidden;
+
+}
 </style>
 </head>
 
@@ -206,9 +225,20 @@ cursor:pointer;transition:0.2s;box-shadow:0 6px 16px rgba(0,114,255,0.35);}
         </button>
 
     </div>
+    <!-- 公開展示地圖 -->
+
+<div class="publicMapSection">
+
+    <h2>📍 公開展示地圖</h2>
+
+    <div id="publicMap"></div>
+
+</div>
 
 </div>
 <script>
+
+/* 主地圖 */
 
 let map=L.map('map').setView([20,120],4)
 
@@ -218,6 +248,17 @@ L.tileLayer(
 maxZoom:19
 }
 ).addTo(map)
+
+/* 公開展示地圖 */
+
+let publicMap=L.map('publicMap').setView([14.6,120.9],7)
+
+L.tileLayer(
+'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
+{
+maxZoom:19
+}
+).addTo(publicMap)
 
 let layers=[]
 
@@ -975,7 +1016,58 @@ a.click()
 URL.revokeObjectURL(url)
 
 }
+/* 載入公開展示GPX */
 
+async function loadPublicGPX(){
+
+try{
+
+let res=await fetch("public.gpx")
+
+let text=await res.text()
+
+let parser=new DOMParser()
+
+let xml=parser.parseFromString(text,"text/xml")
+
+let points=xml.querySelectorAll("trkpt,rtept")
+
+let route=[]
+
+points.forEach(p=>{
+
+let lat=parseFloat(p.getAttribute("lat"))
+let lon=parseFloat(p.getAttribute("lon"))
+
+route.push([lat,lon])
+
+})
+
+if(route.length>0){
+
+let line=L.polyline(route,{
+
+color:"red",
+weight:4,
+opacity:0.9
+
+}).addTo(publicMap)
+
+publicMap.fitBounds(line.getBounds())
+
+}
+
+}catch(err){
+
+console.log("公開GPX讀取失敗")
+
+}
+
+}
+
+/* 啟動公開地圖 */
+
+loadPublicGPX()
 </script>
 
 </body>
