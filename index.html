@@ -140,6 +140,23 @@ overflow:hidden;
 border:3px solid black;
 
 }
+.fileBtn{
+    display:block;
+    padding:14px;
+    margin-bottom:12px;
+    text-align:center;
+    background:linear-gradient(135deg,#02C874,#00a86b);
+    color:white;
+    font-weight:bold;
+    border-radius:12px;
+    cursor:pointer;
+    box-shadow:0 4px 12px rgba(0,0,0,0.15);
+    transition:0.2s;
+}
+
+.fileBtn:hover{
+    transform:scale(1.03);
+}
 </style>
 </head>
 
@@ -214,7 +231,9 @@ border:3px solid black;
 <div class="publicMapSection">
 
 <h2>🗺️ 路線預覽比較區</h2>
-
+<label for="publicFileInput" class="fileBtn">
+📁 選擇 GPX 檔案
+</label>
 <!-- ⭐放這裡（選檔按鈕） -->
 <label for="publicFileInput" class="fileBtn">
 📁 選擇 GPX 檔案
