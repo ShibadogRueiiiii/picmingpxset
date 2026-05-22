@@ -1085,21 +1085,42 @@ publicMap.fitBounds(bounds)
 
 /* 啟動 */
 
-let publicMap = L.map('publicMap').setView([20,120],4)
-let githubMap = L.map('githubMap').setView([20,120],4)
+let map;
+let publicMap;
+let githubMap;
 
-L.tileLayer(
-'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
-{ maxZoom: 19 }
-).addTo(githubMap)
+let githubLayers = [];
+let publicLayers = [];
 
-let githubLayers = []
-L.tileLayer(
-'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
-{ maxZoom: 19 }
-).addTo(publicMap)
+window.addEventListener("load", () => {
 
-let publicLayers = []
+    // 主地圖
+    map = L.map('map').setView([20,120],4)
+
+    L.tileLayer(
+        'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
+        { maxZoom: 19 }
+    ).addTo(map)
+
+    // 公開地圖
+    publicMap = L.map('publicMap').setView([20,120],4)
+
+    L.tileLayer(
+        'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
+        { maxZoom: 19 }
+    ).addTo(publicMap)
+
+    // GitHub 地圖
+    githubMap = L.map('githubMap').setView([20,120],4)
+
+    L.tileLayer(
+        'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
+        { maxZoom: 19 }
+    ).addTo(githubMap)
+
+    // 載入 GitHub 固定圖資
+    loadGithubFixedRoutes()
+})
 
 // 顏色池
 const colors = ["red","blue","green","orange","purple","black"]
