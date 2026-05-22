@@ -161,6 +161,9 @@ cursor:pointer;transition:0.2s;box-shadow:0 6px 16px rgba(0,114,255,0.35);}
         <label>中心擴展距離 (公尺)</label>
 
         <input id="radius" type="number" value="30"/>
+        <label>自定義檔名</label>
+
+<input id="customName" type="text" placeholder="例如：印尼100"/>
 
     </div>
 
@@ -848,7 +851,11 @@ let country=await getCountry(pts[0].lat,pts[0].lon)
 
 let count=pts.length
 
-let filename=`${country} ${count}準確收.gpx`
+let custom=document.getElementById("customName").value.trim()
+
+let baseName=custom || country
+
+let filename=`${baseName} ${count}準確收.gpx`
 
 let route=[]
 
@@ -882,7 +889,11 @@ let country=await getCountry(pts[0].lat,pts[0].lon)
 
 let count=pts.length
 
-let filename=`${country} ${count}收.gpx`
+let custom=document.getElementById("customName").value.trim()
+
+let baseName=custom || country
+
+let filename=`${baseName} ${count}收.gpx`
 
 let route=[]
 
@@ -922,7 +933,11 @@ let country=await getCountry(base[0].lat,base[0].lon)
 
 let count=base.length
 
-let filename=`${country} ${count}s.gpx`
+let custom=document.getElementById("customName").value.trim()
+
+let baseName=custom || country
+
+let filename=`${baseName} ${count}種花.gpx`
 
 let gpx=buildGPX(route,filename.replace(".gpx",""))
 
