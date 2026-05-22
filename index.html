@@ -1083,13 +1083,53 @@ let publicLayers = []
 
 // ===== 只讀地圖（你要新增的）=====
 let readonlyMap = L.map('readonlyMap').setView([20,120],4)
+let readonlyLayers = []
 
+function clearReadonlyMap(){
+    readonlyLayers.forEach(l => readonlyMap.removeLayer(l))
+    readonlyLayers = []
+}
 L.tileLayer(
 'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
 { maxZoom: 19 }
 ).addTo(readonlyMap)
 
 let readonlyLayers = []
+document.getElementById("gpxBatch").addEventListener("change", async function(e){
+
+    const files = Array.from(e.target.files)
+
+    clearReadonlyMap()
+
+    let bounds = []
+
+    for(let i=0;i<files.length;i++){
+
+        const file = files[i]
+
+        const text = await file.text()
+
+        const route = parseGPX(text)
+
+        if(route.length === 0) continue
+
+        let color = colors[i % colors.length]
+
+        let line = L.polyline(route,{
+            color:color,
+            weight:3,
+            opacity:0.9
+        }).addTo(readonlyMap)
+
+        readonlyLayers.push(line)
+
+        route.forEach(p=>bounds.push(p))
+    }
+
+    if(bounds.length){
+        readonlyMap.fitBounds(bounds)
+    }
+})
 // 顏色池
 const colors = ["red","blue","green","orange","purple","black"]
 
