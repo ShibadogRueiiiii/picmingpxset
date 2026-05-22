@@ -222,7 +222,13 @@ border:3px solid black;
 <!-- ⭐只讀地圖（一定要在這裡） -->
 <div class="readonlyMapSection">
   <h2>🔒 GPX 只讀總覽地圖</h2>
+
+  <!-- ⭐ 在這裡加上傳 -->
+  <input type="file" id="gpxBatch" multiple accept=".gpx">
+
+  <!-- 地圖 -->
   <div id="readonlyMap" style="height:700px;"></div>
+
 </div>
 <script src="gpx-list.js"></script>
 <script>
