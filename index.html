@@ -140,23 +140,6 @@ overflow:hidden;
 border:3px solid black;
 
 }
-.fileBtn{
-    display:block;
-    padding:14px;
-    margin-bottom:12px;
-    text-align:center;
-    background:linear-gradient(135deg,#02C874,#00a86b);
-    color:white;
-    font-weight:bold;
-    border-radius:12px;
-    cursor:pointer;
-    box-shadow:0 4px 12px rgba(0,0,0,0.15);
-    transition:0.2s;
-}
-
-.fileBtn:hover{
-    transform:scale(1.03);
-}
 </style>
 </head>
 
@@ -172,7 +155,7 @@ border:3px solid black;
     <div class="inputPanel">
 
         <p>上傳 GPX 檔</p>
-        <input type="file" id="publicFileInput" multiple accept=".gpx" style="display:none;">
+        <input type="file" id="fileInput" accept=".gpx">
 
         <div class="small" id="count">
             GPS點位數量：0
@@ -230,17 +213,7 @@ border:3px solid black;
 
 <div class="publicMapSection">
 
-<h2>🗺️ 路線預覽比較區</h2>
-<label for="publicFileInput" class="fileBtn">
-📁 選擇 GPX 檔案
-</label>
-<!-- ⭐放這裡（選檔按鈕） -->
-<label for="publicFileInput" class="fileBtn">
-📁 選擇 GPX 檔案
-</label>
-
-<input type="file" id="publicFileInput" multiple accept=".gpx" style="display:none;">
-
+<h2>🗺️ 公開展示總覽地圖</h2>
 <div id="dropZone"
 style="
 border:2px dashed #02C874;
@@ -1154,40 +1127,7 @@ function addRouteToPublic(route,name,color){
 
 // 拖曳區
 const dropZone = document.getElementById("dropZone")
-const publicFileInput = document.getElementById("publicFileInput")
 
-publicFileInput.addEventListener("change", function(e){
-
-    const files = e.target.files
-    if(!files.length) return
-
-    clearPublicMap()
-
-    let bounds = []
-
-    Array.from(files).forEach((file,i)=>{
-
-        if(!file.name.endsWith(".gpx")) return
-
-        const reader = new FileReader()
-
-        reader.onload = function(ev){
-
-            const route = parseGPX(ev.target.result)
-            if(route.length == 0) return
-
-            let color = colors[i % colors.length]
-
-            addRouteToPublic(route, file.name, color)
-
-            route.forEach(p => bounds.push(p))
-
-            publicMap.fitBounds(bounds)
-        }
-
-        reader.readAsText(file)
-    })
-})
 dropZone.addEventListener("dragover",e=>{
     e.preventDefault()
     dropZone.style.background = "#eaffea"
@@ -1240,3 +1180,6 @@ dropZone.addEventListener("drop",e=>{
 
 </body>
 </html>
+
+在公開總覽地圖上
+我想新增一個可以選擇檔案的按鈕
