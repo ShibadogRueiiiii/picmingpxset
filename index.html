@@ -239,6 +239,7 @@ border:3px solid black;
 <div id="map"></div>
 
 </div>
+<script src="gpx-list.js"></script>
 <script>
 
 /* 主地圖 */
@@ -1019,6 +1020,87 @@ a.click()
 URL.revokeObjectURL(url)
 
 }
+/* 公開展示地圖初始化 */
+
+let publicMap=L.map('publicMap').setView([14.6,120.9],7)
+
+L.tileLayer(
+'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
+{
+maxZoom:19
+}
+).addTo(publicMap)
+
+/* 載入全部公開GPX */
+
+async function loadAllPublicGPX(){
+
+let bounds=[]
+
+for(let item of GPX_FILES){
+
+try{
+
+let res=await fetch(item.file)
+
+let text=await res.text()
+
+let parser=new DOMParser()
+
+let xml=parser.parseFromString(text,"text/xml")
+
+let points=xml.querySelectorAll("trkpt,rtept")
+
+let route=[]
+
+points.forEach(p=>{
+
+let lat=parseFloat(p.getAttribute("lat"))
+let lon=parseFloat(p.getAttribute("lon"))
+
+route.push([lat,lon])
+
+bounds.push([lat,lon])
+
+})
+
+if(route.length>0){
+
+let line=L.polyline(route,{
+
+color:item.color,
+weight:4,
+opacity:0.9
+
+}).addTo(publicMap)
+
+/* 點擊顯示檔名 */
+
+line.bindPopup(item.file)
+
+}
+
+}catch(err){
+
+console.log(item.file+" 載入失敗")
+
+}
+
+}
+
+/* 自動縮放 */
+
+if(bounds.length>0){
+
+publicMap.fitBounds(bounds)
+
+}
+
+}
+
+/* 啟動 */
+
+loadAllPublicGPX()
 /* 載入公開展示GPX */
 
 async function loadPublicGPX(){
