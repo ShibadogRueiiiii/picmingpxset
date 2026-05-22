@@ -154,80 +154,62 @@ border:3px solid black;
 
 <div class="container">
 
-    <!-- 左邊輸入區 -->
+    <!-- 左邊：輸入區 -->
     <div class="inputPanel">
 
         <p>上傳 GPX 檔</p>
-
         <input type="file" id="fileInput" accept=".gpx">
 
         <div class="small" id="count">
-        GPS點位數量：0
+            GPS點位數量：0
         </div>
 
         <p>GPS 座標 A</p>
+        <textarea id="gps"></textarea>
 
-<textarea id="gps"></textarea>
+        <p style="margin-top:12px;">上傳 GPX 檔 B</p>
+        <input type="file" id="fileInput2" accept=".gpx">
 
-<p style="margin-top:12px;">上傳 GPX 檔 B</p>
-
-<input type="file" id="fileInput2" accept=".gpx">
-
-<p style="margin-top:12px;">GPS 座標 B</p>
-
-<textarea id="gps2"></textarea>
+        <p style="margin-top:12px;">GPS 座標 B</p>
+        <textarea id="gps2"></textarea>
 
         <label>中心擴展距離 (公尺)</label>
-
         <input id="radius" type="number" value="30"/>
-        <label>自定義檔名</label>
 
-<input id="customName" type="text" placeholder="例如：印尼100"/>
+        <label>自定義檔名</label>
+        <input id="customName" type="text" placeholder="例如：印尼100">
 
     </div>
 
-   
-    <!-- 右邊功能區 -->
+    <!-- 中間：主地圖 -->
+    <div class="mainMapSection">
+
+        <h2>🗺️ GPS 路線總覽地圖</h2>
+
+        <div id="map"></div>
+
+    </div>
+
+    <!-- 右邊：按鈕區 -->
     <div class="buttonPanel">
 
-        <button class="previewBtn" onclick="preview()">
-        🗺️ 地圖預覽
-        </button>
+        <button class="previewBtn" onclick="preview()">🗺️ 地圖預覽</button>
 
-        <button class="compareBtn" onclick="previewDualRoute()">
-        🧭 雙路線預覽
-        </button>
+        <button class="compareBtn" onclick="previewDualRoute()">🧭 雙路線預覽</button>
 
-        <button class="hexPreviewBtn" onclick="previewHexRoute()">
-        🌸 種花路線預覽
-        </button>
+        <button class="hexPreviewBtn" onclick="previewHexRoute()">🌸 種花路線預覽</button>
 
-        <button class="accurateBtn" onclick="downloadAccurateRoute()">
-        🎯 準確收果路線
-        </button>
+        <button class="accurateBtn" onclick="downloadAccurateRoute()">🎯 準確收果路線</button>
 
-        <button class="fruitBtn" onclick="downloadOriginal()">
-        🎲 隨機收果路線 GPX
-        </button>
+        <button class="fruitBtn" onclick="downloadOriginal()">🎲 隨機收果路線 GPX</button>
 
-        <button class="flowerBtn" onclick="downloadHex()">
-        💐 種花路線 GPX
-        </button>
+        <button class="flowerBtn" onclick="downloadHex()">💐 種花路線 GPX</button>
 
-        <button class="allDownloadBtn" onclick="downloadAllRoutes()">
-        ⬇️ 一鍵下載 收果 + 種花
-        </button>
-<!-- 主地圖展示區 -->
+        <button class="allDownloadBtn" onclick="downloadAllRoutes()">⬇️ 一鍵下載 收果 + 種花</button>
 
-<div class="mainMapSection">
-
-<h2>🗺️ GPS 路線總覽地圖</h2>
-
-<div id="map"></div>
-
-</div>
     </div>
 
+</div>
 </div>
 
 <!-- 公開展示地圖 -->
