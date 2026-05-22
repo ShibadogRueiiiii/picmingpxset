@@ -219,15 +219,26 @@ border:3px solid black;
         </button>
 
     </div>
-    <!-- 公開展示地圖 -->
+
+</div>
+
+<!-- 主地圖展示區 -->
+
+<div class="mainMapSection">
+
+<h2>🗺️ GPS 路線總覽地圖</h2>
+
+<div id="map"></div>
+
+</div>
+
+<!-- 公開展示地圖 -->
 
 <div class="publicMapSection">
 
-    <h2>🗺️ 公開展示總覽地圖</h2>
+<h2>🗺️ 公開展示總覽地圖</h2>
 
-    <div id="publicMap"></div>
-
-</div>
+<div id="publicMap"></div>
 
 </div>
     <!-- 主地圖展示區 -->
@@ -1020,16 +1031,7 @@ a.click()
 URL.revokeObjectURL(url)
 
 }
-/* 公開展示地圖初始化 */
 
-let publicMap=L.map('publicMap').setView([14.6,120.9],7)
-
-L.tileLayer(
-'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
-{
-maxZoom:19
-}
-).addTo(publicMap)
 
 /* 載入全部公開GPX */
 
