@@ -214,6 +214,20 @@ border:3px solid black;
 <div class="publicMapSection">
 
 <h2>🗺️ 公開展示總覽地圖</h2>
+<div id="dropZone"
+style="
+border:2px dashed #02C874;
+padding:14px;
+border-radius:12px;
+text-align:center;
+margin-bottom:12px;
+color:#02C874;
+font-weight:bold;
+cursor:pointer;
+background:#f9fff9;
+">
+⬆️ 拖曳 GPX 檔案到這裡（公開地圖即時更新）
+</div>
 
 <div id="publicMap"></div>
 
@@ -1060,7 +1074,108 @@ publicMap.fitBounds(bounds)
 
 /* 啟動 */
 
+let publicMap = L.map('publicMap').setView([20,120],4)
 
+L.tileLayer(
+'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
+{ maxZoom: 19 }
+).addTo(publicMap)
+
+let publicLayers = []
+
+// 顏色池
+const colors = ["red","blue","green","orange","purple","black"]
+
+// 清除公開圖層
+function clearPublicMap(){
+    publicLayers.forEach(l => publicMap.removeLayer(l))
+    publicLayers = []
+}
+
+// 解析 GPX
+function parseGPX(text){
+    const parser = new DOMParser()
+    const xml = parser.parseFromString(text,"text/xml")
+    const pts = xml.querySelectorAll("trkpt,rtept")
+
+    let route = []
+
+    pts.forEach(p=>{
+        let lat = parseFloat(p.getAttribute("lat"))
+        let lon = parseFloat(p.getAttribute("lon"))
+        if(!isNaN(lat) && !isNaN(lon)){
+            route.push([lat,lon])
+        }
+    })
+
+    return route
+}
+
+// 加入路線
+function addRouteToPublic(route,name,color){
+
+    let line = L.polyline(route,{
+        color:color,
+        weight:4,
+        opacity:0.9
+    }).addTo(publicMap)
+
+    line.bindPopup(name)
+
+    publicLayers.push(line)
+}
+
+// 拖曳區
+const dropZone = document.getElementById("dropZone")
+
+dropZone.addEventListener("dragover",e=>{
+    e.preventDefault()
+    dropZone.style.background = "#eaffea"
+})
+
+dropZone.addEventListener("dragleave",e=>{
+    dropZone.style.background = "#f9fff9"
+})
+
+dropZone.addEventListener("drop",e=>{
+    e.preventDefault()
+
+    dropZone.style.background = "#f9fff9"
+
+    const files = e.dataTransfer.files
+
+    if(!files.length) return
+
+    clearPublicMap()
+
+    let bounds = []
+
+    Array.from(files).forEach((file,i)=>{
+
+        if(!file.name.endsWith(".gpx")) return
+
+        const reader = new FileReader()
+
+        reader.onload = function(ev){
+
+            const route = parseGPX(ev.target.result)
+
+            if(route.length==0) return
+
+            let color = colors[i % colors.length]
+
+            addRouteToPublic(route,file.name,color)
+
+            route.forEach(p=>bounds.push(p))
+
+            publicMap.fitBounds(bounds)
+
+        }
+
+        reader.readAsText(file)
+
+    })
+})
 </script>
 
 </body>
