@@ -523,7 +523,97 @@ alert(msg)
 return pts
 
 }
-    
+function checkDuplicateBetweenRoutes(){
+
+    let textareaA = document.getElementById("gps")
+    let textareaB = document.getElementById("gps2")
+
+    let linesA = textareaA.value.trim().split(/\n+/)
+    let linesB = textareaB.value.trim().split(/\n+/)
+
+    let mapA = {}
+    let duplicates = []
+
+    linesA.forEach((line,index)=>{
+
+        let clean = line.replace(/^⚠️|^❗️/,"").trim()
+
+        let p = clean.split(",")
+
+        if(p.length==2){
+
+            let lat = parseFloat(p[0])
+            let lon = parseFloat(p[1])
+
+            if(!isNaN(lat) && !isNaN(lon)){
+
+                let key = lat.toFixed(7)+","+lon.toFixed(7)
+
+                mapA[key] = index
+            }
+        }
+    })
+
+    linesB.forEach((line,indexB)=>{
+
+        let clean = line.replace(/^⚠️|^❗️/,"").trim()
+
+        let p = clean.split(",")
+
+        if(p.length==2){
+
+            let lat = parseFloat(p[0])
+            let lon = parseFloat(p[1])
+
+            if(!isNaN(lat) && !isNaN(lon)){
+
+                let key = lat.toFixed(7)+","+lon.toFixed(7)
+
+                if(mapA[key] !== undefined){
+
+                    duplicates.push({
+                        value:key,
+                        indexA:mapA[key],
+                        indexB:indexB
+                    })
+                }
+            }
+        }
+    })
+
+    if(duplicates.length>0){
+
+        let newLinesA = [...linesA]
+        let newLinesB = [...linesB]
+
+        let msg = "偵測到兩段路線有重複點\n\n"
+
+        duplicates.forEach(d=>{
+
+            msg += `重複點為 ${d.value}\n`
+
+            if(!newLinesA[d.indexA].startsWith("❗️")){
+
+                newLinesA[d.indexA] = "❗️"+newLinesA[d.indexA]
+            }
+
+            if(!newLinesB[d.indexB].startsWith("❗️")){
+
+                newLinesB[d.indexB] = "❗️"+newLinesB[d.indexB]
+            }
+
+        })
+
+        textareaA.value = newLinesA.join("\n")
+        textareaB.value = newLinesB.join("\n")
+
+        alert(msg)
+
+        return true
+    }
+
+    return false
+}    
 function metersToLat(m){
 
 return m/111320
@@ -732,6 +822,10 @@ clearMap()
 let routeA=parseInput()
 
 let routeB=parseInput2()
+
+/* 檢查 A/B 重複點 */
+
+checkDuplicateBetweenRoutes()
 
 if(routeA.length==0 && routeB.length==0) return
 
