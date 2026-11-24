@@ -999,10 +999,7 @@ route.push([p.lat,p.lon])
 
 })
 
-// 最後回到最後原始點
-let last=pts[pts.length-1]
 
-route.push([last.lat,last.lon])
 
 let gpx=buildGPX(route,filename.replace(".gpx",""))
 
