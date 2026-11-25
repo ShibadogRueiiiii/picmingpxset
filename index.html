@@ -1,3 +1,14 @@
+
+
+
+
+
+
+
+
+
+
+
 <!DOCTYPE html>
 <html lang="zh">
 <head>
@@ -322,6 +333,24 @@ map.on("click", function(e){
 
             <button
                 type="button"
+                onclick="previewFastFlowerRoute(${lat},${lon})"
+                style="
+                    width:100%;
+                    padding:10px;
+                    background:linear-gradient(135deg,#2196f3,#1565c0);
+                    color:white;
+                    border:none;
+                    border-radius:6px;
+                    font-weight:bold;
+                    cursor:pointer;
+                    margin-bottom:6px;
+                "
+            >
+                👀 一鍵預覽最快種花路線
+            </button>
+
+            <button
+                type="button"
                 onclick="downloadFastFlowerRoute(${lat},${lon})"
                 style="
                     width:100%;
@@ -415,46 +444,80 @@ function calculateDestination(lat, lon, bearing, distance){
 }
 
 
-/* 下載最快種花路線 GPX */
-async function downloadFastFlowerRoute(startLat, startLon){
+/* 計算最快種花路線的四個點 */
+function getFastFlowerRoute(startLat, startLon){
 
     // P1：使用者在地圖上點擊的位置
-    const p1 = {
-        lat: startLat,
-        lon: startLon
-    };
+    const p1 = { lat: startLat, lon: startLon };
 
     // P2：從 P1 往東北方 42 度，700 公尺
-    const p2 = calculateDestination(
-        p1.lat,
-        p1.lon,
-        42,
-        700
-    );
+    const p2 = calculateDestination(p1.lat, p1.lon, 42, 700);
 
     // P3：從 P2 往東南方 42 度，150 公尺
-    const p3 = calculateDestination(
-        p2.lat,
-        p2.lon,
-        138,
-        150
-    );
+    const p3 = calculateDestination(p2.lat, p2.lon, 138, 150);
 
     // P4：從 P3 往西南方 42 度，700 公尺
-    const p4 = calculateDestination(
-        p3.lat,
-        p3.lon,
-        222,
-        700
-    );
+    const p4 = calculateDestination(p3.lat, p3.lon, 222, 700);
 
-    // 依照 P1 → P2 → P3 → P4 順序建立路線
-    const route = [
+    return [
         [p1.lat, p1.lon],
         [p2.lat, p2.lon],
         [p3.lat, p3.lon],
         [p4.lat, p4.lon]
     ];
+}
+
+
+/* 一鍵預覽最快種花路線 */
+let fastFlowerPreviewLayer = null;
+
+function previewFastFlowerRoute(startLat, startLon){
+
+    const route = getFastFlowerRoute(startLat, startLon);
+
+    // 清除上一次的最快路線預覽，避免重複堆疊
+    if(fastFlowerPreviewLayer){
+        map.removeLayer(fastFlowerPreviewLayer);
+    }
+
+    // 在主地圖上畫出路線，並標示起點與終點
+    fastFlowerPreviewLayer = L.featureGroup([
+        L.polyline(route, {
+            color: "#e91e63",
+            weight: 5,
+            opacity: 0.9,
+            dashArray: "10, 7"
+        }),
+        L.circleMarker(route[0], {
+            radius: 7,
+            color: "#ffffff",
+            weight: 2,
+            fillColor: "#02C874",
+            fillOpacity: 1
+        }),
+        L.circleMarker(route[route.length - 1], {
+            radius: 7,
+            color: "#ffffff",
+            weight: 2,
+            fillColor: "#1565c0",
+            fillOpacity: 1
+        })
+    ]).addTo(map);
+
+    // 自動縮放到完整路線範圍
+    map.fitBounds(fastFlowerPreviewLayer.getBounds(), {
+        padding: [35, 35]
+    });
+
+    // 關閉座標彈出視窗，讓預覽路線更清楚
+    map.closePopup();
+}
+
+
+/* 下載最快種花路線 GPX */
+async function downloadFastFlowerRoute(startLat, startLon){
+
+    const route = getFastFlowerRoute(startLat, startLon);
 
     // 依照起點座標查詢國家名稱
     let country = "未知地區";
@@ -1536,3 +1599,7 @@ dropZone.addEventListener("drop",e=>{
 
 </body>
 </html>
+
+
+
+
