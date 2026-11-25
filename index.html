@@ -333,17 +333,17 @@ map.on("click", function(e){
             <button
                 type="button"
                 onclick="previewFastFlowerRoute(${lat},${lon},1)"
-                style="width:100%;padding:10px;background:linear-gradient(135deg,#2196f3,#1565c0);color:white;border:none;border-radius:6px;font-weight:bold;cursor:pointer;margin-bottom:6px;"
+                style="width:100%;padding:10px;background:linear-gradient(135deg,#43a047,#2e7d32);color:white;border:none;border-radius:6px;font-weight:bold;cursor:pointer;margin-bottom:6px;"
             >
-                👀 預覽版本一
+                👀 最快路線版本一
             </button>
 
             <button
                 type="button"
                 onclick="previewFastFlowerRoute(${lat},${lon},2)"
-                style="width:100%;padding:10px;background:linear-gradient(135deg,#00897b,#00695c);color:white;border:none;border-radius:6px;font-weight:bold;cursor:pointer;margin-bottom:6px;"
+                style="width:100%;padding:10px;background:linear-gradient(135deg,#2196f3,#1565c0);color:white;border:none;border-radius:6px;font-weight:bold;cursor:pointer;margin-bottom:6px;"
             >
-                👀 預覽版本二
+                👀 最快路線版本二
             </button>
 
             <button
@@ -352,7 +352,7 @@ map.on("click", function(e){
                 style="
                     width:100%;
                     padding:10px;
-                    background:linear-gradient(135deg,#e91e63,#ad1457);
+                    background:linear-gradient(135deg,#43a047,#2e7d32);
                     color:white;
                     border:none;
                     border-radius:6px;
@@ -360,7 +360,7 @@ map.on("click", function(e){
                     cursor:pointer;
                 "
             >
-                🌸 下載最快種花路線
+                🌸 下載最快路線版本一
             </button>
         </div>
     `;
@@ -494,13 +494,19 @@ fastFlowerDownloadControl.onAdd = function(){
         return button;
     };
 
-    makeButton("👀 預覽版本一", "#1565c0", function(){
+    // 版本一按鈕統一綠色；版本二按鈕統一藍色
+    makeButton("👀 預覽版本一", "#2e7d32", function(){
         if(lastFastFlowerStart) previewFastFlowerRoute(lastFastFlowerStart.lat, lastFastFlowerStart.lon, 1);
     });
-    makeButton("👀 預覽版本二", "#00695c", function(){
+    makeButton("👀 預覽版本二", "#1565c0", function(){
         if(lastFastFlowerStart) previewFastFlowerRoute(lastFastFlowerStart.lat, lastFastFlowerStart.lon, 2);
     });
-    makeButton("⬇️ 下載目前預覽路線", "#006400", downloadCurrentFastFlowerPreview);
+    makeButton("⬇️ 下載版本一", "#2e7d32", function(){
+        if(lastFastFlowerStart) downloadFastFlowerRoute(lastFastFlowerStart.lat, lastFastFlowerStart.lon, 1);
+    });
+    makeButton("⬇️ 下載版本二", "#1565c0", function(){
+        if(lastFastFlowerStart) downloadFastFlowerRoute(lastFastFlowerStart.lat, lastFastFlowerStart.lon, 2);
+    });
 
     L.DomEvent.disableClickPropagation(container);
     L.DomEvent.disableScrollPropagation(container);
@@ -583,9 +589,9 @@ async function downloadCurrentFastFlowerPreview(){
 }
 
 /* 下載最快種花路線 GPX */
-async function downloadFastFlowerRoute(startLat, startLon){
+async function downloadFastFlowerRoute(startLat, startLon, version = 1){
 
-    const route = getFastFlowerRoute(startLat, startLon, 1);
+    const route = getFastFlowerRoute(startLat, startLon, version);
 
     // 依照起點座標查詢國家名稱
     let country = "未知地區";
@@ -596,8 +602,9 @@ async function downloadFastFlowerRoute(startLat, startLon){
         console.error("國家查詢失敗：", err);
     }
 
-    // 檔名：該地區國家 最快金幣路線.gpx
-    const filename = `${country} 最快金幣路線.gpx`;
+    // 檔名包含版本，方便辨識下載的是哪一條路線
+    const versionLabel = version === 2 ? "版本二" : "版本一";
+    const filename = `${country} 最快金幣路線 ${versionLabel}.gpx`;
 
     // 使用原本的 GPX 產生及下載函式
     const gpx = buildGPX(
@@ -1667,7 +1674,3 @@ dropZone.addEventListener("drop",e=>{
 
 </body>
 </html>
-
-
-
-
