@@ -9,6 +9,8 @@
 
 
 
+
+
 <!DOCTYPE html>
 <html lang="zh">
 <head>
@@ -470,10 +472,45 @@ function getFastFlowerRoute(startLat, startLon){
 
 /* 一鍵預覽最快種花路線 */
 let fastFlowerPreviewLayer = null;
+let currentFastFlowerPreviewRoute = null;
+
+// 預覽路線專用下載按鈕，固定顯示在地圖右上角
+const fastFlowerDownloadControl = L.control({ position: "topright" });
+
+fastFlowerDownloadControl.onAdd = function(){
+    const container = L.DomUtil.create("div", "leaflet-bar");
+    container.style.background = "transparent";
+    container.style.border = "none";
+    container.style.boxShadow = "none";
+    container.style.display = "none";
+
+    const button = L.DomUtil.create("button", "", container);
+    button.type = "button";
+    button.innerHTML = "⬇️ 下載目前預覽路線";
+    button.title = "下載目前地圖上正在預覽的最快種花路線 GPX";
+    button.style.cssText = "padding:10px 13px;background:#006400;color:#fff;border:0;border-radius:7px;font-weight:bold;font-size:13px;cursor:pointer;box-shadow:0 2px 7px rgba(0,0,0,.3);white-space:nowrap;";
+    button.addEventListener("click", function(e){
+        L.DomEvent.stop(e);
+        downloadCurrentFastFlowerPreview();
+    });
+
+    L.DomEvent.disableClickPropagation(container);
+    L.DomEvent.disableScrollPropagation(container);
+    this._container = container;
+    this._button = button;
+    return container;
+};
+
+fastFlowerDownloadControl.addTo(map);
 
 function previewFastFlowerRoute(startLat, startLon){
 
     const route = getFastFlowerRoute(startLat, startLon);
+    // 保存本次實際預覽的路線，下載時直接使用，不重新取點
+    currentFastFlowerPreviewRoute = route.map(point => point.slice());
+    if(fastFlowerDownloadControl._container){
+        fastFlowerDownloadControl._container.style.display = "block";
+    }
 
     // 清除上一次的最快路線預覽，避免重複堆疊
     if(fastFlowerPreviewLayer){
@@ -513,6 +550,31 @@ function previewFastFlowerRoute(startLat, startLon){
     map.closePopup();
 }
 
+
+/* 下載目前地圖上預覽的最快種花路線 GPX */
+async function downloadCurrentFastFlowerPreview(){
+
+    if(!currentFastFlowerPreviewRoute || currentFastFlowerPreviewRoute.length === 0){
+        alert("請先預覽最快種花路線！");
+        return;
+    }
+
+    // 使用預覽當下保存的路線，絕不重新計算或重新選取點位
+    const route = currentFastFlowerPreviewRoute.map(point => point.slice());
+    const startLat = route[0][0];
+    const startLon = route[0][1];
+
+    let country = "未知地區";
+    try {
+        country = await getCountry(startLat, startLon);
+    } catch(err) {
+        console.error("國家查詢失敗：", err);
+    }
+
+    const filename = `${country} 最快金幣路線.gpx`;
+    const gpx = buildGPX(route, filename.replace(".gpx", ""));
+    downloadFile(filename, gpx);
+}
 
 /* 下載最快種花路線 GPX */
 async function downloadFastFlowerRoute(startLat, startLon){
