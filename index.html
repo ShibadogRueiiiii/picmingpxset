@@ -140,44 +140,6 @@ overflow:hidden;
 border:3px solid black;
 
 }
-
-/* 點擊座標彈窗樣式 */
-.coordPopupBox{
-min-width:190px;
-font-family:Arial,sans-serif;
-line-height:1.5;
-}
-.coordPopupTitle{
-font-weight:bold;
-margin-bottom:6px;
-color:#222;
-}
-.coordPopupValue{
-background:#f4f4f4;
-padding:6px 8px;
-border-radius:6px;
-border:1px solid #ddd;
-font-family:monospace;
-font-size:13px;
-user-select:all;
-color:#111;
-}
-.coordCopyBtn{
-margin-top:8px !important;
-padding:8px 10px !important;
-width:100%;
-background:#02C874;
-color:#fff;
-border:none;
-border-radius:8px;
-font-size:13px;
-font-weight:bold;
-cursor:pointer;
-transition:0.15s;
-}
-.coordCopyBtn:hover{
-background:#00b065;
-}
 </style>
 </head>
 
@@ -297,68 +259,6 @@ maxZoom:19
 ).addTo(map)
 
 let layers=[]
-
-/* 複製座標文字（支援 Clipboard API 與備援方案） */
-function copyGpxCoord(coordText, btnEl){
-    if(navigator.clipboard && window.isSecureContext){
-        navigator.clipboard.writeText(coordText).then(()=>{
-            showCoordCopied(btnEl);
-        }).catch(()=>{
-            fallbackCopyGpxCoord(coordText, btnEl);
-        });
-    }else{
-        fallbackCopyGpxCoord(coordText, btnEl);
-    }
-}
-
-function fallbackCopyGpxCoord(coordText, btnEl){
-    const textarea = document.createElement("textarea");
-    textarea.value = coordText;
-    textarea.style.position = "fixed";
-    textarea.style.left = "-9999px";
-    document.body.appendChild(textarea);
-    textarea.select();
-    try{
-        document.execCommand("copy");
-        showCoordCopied(btnEl);
-    }catch(err){
-        alert("無法自動複製，請手動複製座標：" + coordText);
-    }
-    document.body.removeChild(textarea);
-}
-
-function showCoordCopied(btnEl){
-    if(!btnEl) return;
-    const originalText = btnEl.textContent;
-    btnEl.textContent = "✅ 已複製座標";
-    setTimeout(()=>{
-        btnEl.textContent = originalText;
-    }, 1200);
-}
-
-/* GPS 路線總覽地圖：左鍵點擊取得 GPX 座標並跳出複製按鈕 */
-map.on("click", function(e){
-    if(e.originalEvent && e.originalEvent.button !== 0) return;
-
-    const lat = e.latlng.lat.toFixed(7);
-    const lon = e.latlng.lng.toFixed(7);
-    const coordText = `${lat},${lon}`;
-
-    const popupContent = `
-        <div class="coordPopupBox">
-            <div class="coordPopupTitle">📍 點擊 GPX 座標</div>
-            <div class="coordPopupValue">${coordText}</div>
-            <button type="button" class="coordCopyBtn" onclick="copyGpxCoord('${coordText}', this)">
-                📋 一鍵複製座標
-            </button>
-        </div>
-    `;
-
-    L.popup({ offset: [0, -4] })
-        .setLatLng(e.latlng)
-        .setContent(popupContent)
-        .openOn(map);
-});
 
 /* GPX解析器 */
 
@@ -1291,4 +1191,128 @@ const colors = ["red","blue","green","orange","purple","black"]
 
 // 清除公開圖層
 function clearPublicMap(){
-    publicLayers.forEach(l => publicMap.
+    publicLayers.forEach(l => publicMap.removeLayer(l))
+    publicLayers = []
+}
+
+// 解析 GPX
+function parseGPX(text){
+    const parser = new DOMParser()
+    const xml = parser.parseFromString(text,"text/xml")
+    const pts = xml.querySelectorAll("trkpt,rtept")
+
+    let route = []
+
+    pts.forEach(p=>{
+        let lat = parseFloat(p.getAttribute("lat"))
+        let lon = parseFloat(p.getAttribute("lon"))
+        if(!isNaN(lat) && !isNaN(lon)){
+            route.push([lat,lon])
+        }
+    })
+
+    return route
+}
+
+// 加入路線
+function addRouteToPublic(route,name,color){
+
+    let line = L.polyline(route,{
+        color:color,
+        weight:4,
+        opacity:0.9
+    }).addTo(publicMap)
+
+    line.bindPopup(name)
+
+    publicLayers.push(line)
+}
+
+// 拖曳區
+const dropZone = document.getElementById("dropZone")
+const publicFileInput = document.getElementById("publicFileInput")
+
+publicFileInput.addEventListener("change", function(e){
+
+    const files = e.target.files
+    if(!files.length) return
+
+    clearPublicMap()
+
+    let bounds = []
+
+    Array.from(files).forEach((file,i)=>{
+
+        if(!file.name.endsWith(".gpx")) return
+
+        const reader = new FileReader()
+
+        reader.onload = function(ev){
+
+            const route = parseGPX(ev.target.result)
+            if(route.length == 0) return
+
+            let color = colors[i % colors.length]
+
+            addRouteToPublic(route, file.name, color)
+
+            route.forEach(p => bounds.push(p))
+
+            publicMap.fitBounds(bounds)
+        }
+
+        reader.readAsText(file)
+    })
+})
+dropZone.addEventListener("dragover",e=>{
+    e.preventDefault()
+    dropZone.style.background = "#eaffea"
+})
+
+dropZone.addEventListener("dragleave",e=>{
+    dropZone.style.background = "#f9fff9"
+})
+
+dropZone.addEventListener("drop",e=>{
+    e.preventDefault()
+
+    dropZone.style.background = "#f9fff9"
+
+    const files = e.dataTransfer.files
+
+    if(!files.length) return
+
+    clearPublicMap()
+
+    let bounds = []
+
+    Array.from(files).forEach((file,i)=>{
+
+        if(!file.name.endsWith(".gpx")) return
+
+        const reader = new FileReader()
+
+        reader.onload = function(ev){
+
+            const route = parseGPX(ev.target.result)
+
+            if(route.length==0) return
+
+            let color = colors[i % colors.length]
+
+            addRouteToPublic(route,file.name,color)
+
+            route.forEach(p=>bounds.push(p))
+
+            publicMap.fitBounds(bounds)
+
+        }
+
+        reader.readAsText(file)
+
+    })
+})
+</script>
+
+</body>
+</html>
