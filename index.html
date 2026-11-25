@@ -9,8 +9,6 @@
 
 
 
-
-
 <!DOCTYPE html>
 <html lang="zh">
 <head>
@@ -541,10 +539,7 @@ function previewFastFlowerRoute(startLat, startLon){
         })
     ]).addTo(map);
 
-    // 自動縮放到完整路線範圍
-    map.fitBounds(fastFlowerPreviewLayer.getBounds(), {
-        padding: [35, 35]
-    });
+    // 不自動縮放或移動地圖，維持使用者目前的地圖比例與位置
 
     // 關閉座標彈出視窗，讓預覽路線更清楚
     map.closePopup();
