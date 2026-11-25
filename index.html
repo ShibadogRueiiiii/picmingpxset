@@ -258,6 +258,77 @@ maxZoom:19
 }
 ).addTo(map)
 
+/* ================================
+   地圖左鍵點擊取得 GPS 座標
+================================ */
+
+map.on('click', function(e){
+
+    // 取得十進位座標
+    let lat = e.latlng.lat.toFixed(7);
+    let lon = e.latlng.lng.toFixed(7);
+
+    let coordinate = lat + "," + lon;
+
+    // 建立小方格
+    L.popup()
+        .setLatLng(e.latlng)
+        .setContent(`
+            <div style="
+                min-width:190px;
+                font-family:Arial;
+                text-align:center;
+            ">
+                <div style="
+                    font-weight:bold;
+                    font-size:14px;
+                    margin-bottom:8px;
+                ">
+                    📍 點擊位置座標
+                </div>
+
+                <input
+                    type="text"
+                    value="${coordinate}"
+                    readonly
+                    onclick="this.select()"
+                    style="
+                        width:100%;
+                        box-sizing:border-box;
+                        padding:8px;
+                        border:1px solid #ccc;
+                        border-radius:6px;
+                        font-size:13px;
+                        text-align:center;
+                        margin-bottom:8px;
+                    "
+                >
+
+                <button
+                    onclick="
+                        navigator.clipboard.writeText('${coordinate}')
+                        .then(()=>alert('✅ 座標已複製！'))
+                        .catch(()=>alert('複製失敗，請手動複製'))
+                    "
+                    style="
+                        width:100%;
+                        padding:8px;
+                        background:#02C874;
+                        color:white;
+                        border:none;
+                        border-radius:6px;
+                        font-weight:bold;
+                        cursor:pointer;
+                    "
+                >
+                    📋 複製座標
+                </button>
+            </div>
+        `)
+        .openOn(map);
+
+});
+
 let layers=[]
 
 /* GPX解析器 */
