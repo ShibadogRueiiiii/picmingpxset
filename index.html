@@ -746,13 +746,13 @@ const fastFlowerDownloadControl = L.control({ position: "topright" });
 
 fastFlowerDownloadControl.onAdd = function(){
     const container = L.DomUtil.create("div", "leaflet-bar");
-    container.style.cssText = "background:rgba(255,255,255,.96);border:0;box-shadow:none;display:none;padding:10px;border-radius:12px;min-width:240px;";
+    container.style.cssText = "background:rgba(255,255,255,.96);border:0;box-shadow:none;display:none;padding:6px;border-radius:7.2px;min-width:144px;";
 
     const makeButton = (label, background, handler) => {
         const button = L.DomUtil.create("button", "", container);
         button.type = "button";
         button.innerHTML = label;
-        button.style.cssText = `display:block;box-sizing:border-box;width:100%;margin:6px 0;padding:16px 20px;background:${background};color:#fff;border:0;border-radius:12px;font-weight:bold;font-size:24px;cursor:pointer;white-space:nowrap;`;
+        button.style.cssText = `display:block;box-sizing:border-box;width:100%;margin:3.6px 0;padding:9.6px 12px;background:${background};color:#fff;border:0;border-radius:7.2px;font-weight:bold;font-size:14.4px;cursor:pointer;white-space:nowrap;`;
         button.addEventListener("click", function(e){
             L.DomEvent.stop(e);
             handler();
