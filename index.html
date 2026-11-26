@@ -22,10 +22,6 @@
 
 
 
-
-
-
-
 <!DOCTYPE html>
 <html lang="zh">
 <head>
@@ -220,7 +216,7 @@ border:3px solid black;
     grid-area:bottom;
     min-width:0;
     display:grid;
-    grid-template-columns:repeat(3, minmax(0, 1fr));
+    grid-template-columns:repeat(2, minmax(0, 1fr));
     gap:12px;
     background:white;
     padding:18px;
@@ -240,10 +236,8 @@ border:3px solid black;
 .hexPreviewBtn,.fruitBtn,.flowerBtn{font-size:22.5px;}
 /* 中間區塊：三個主要路線操作 */
 .buttonPanel > button{grid-column:auto;}
-/* 最底部：一鍵下載獨占一列，兩個魅影功能並排 */
+/* 最底部：一鍵下載獨占一列，兩個魅影按鈕各佔半列、填滿整行 */
 .bottomButtonPanel > .allDownloadBtn{grid-column:1 / -1;}
-.bottomButtonPanel > .phantomFruitBtn{grid-column:1;}
-.bottomButtonPanel > .phantomFlowerBtn{grid-column:2;}
 @media (max-width:800px){
     .container{
         grid-template-columns:minmax(0, 1fr);
