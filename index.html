@@ -1,31 +1,4 @@
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 <!DOCTYPE html>
 <html lang="zh">
 <head>
@@ -348,8 +321,10 @@ border:3px solid black;
     gap:6px;
 }
 .coordinateLineNumbers{
+    display:block !important; /* 避免 flex 將換行文字拆成橫向排列 */
     flex:0 0 38px;
     width:38px;
+    min-width:38px;
     box-sizing:border-box;
     padding:12px 5px;
     overflow:hidden;
@@ -361,7 +336,7 @@ border:3px solid black;
     font-size:14px;
     line-height:1.4;
     text-align:right;
-    white-space:pre;
+    white-space:pre !important; /* 每個行號依照換行直向顯示 */
     user-select:none;
 }
 .coordinateInputWrap textarea{
