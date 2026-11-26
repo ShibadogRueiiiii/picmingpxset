@@ -7,6 +7,9 @@
 
 
 
+
+
+
 <!DOCTYPE html>
 <html lang="zh">
 <head>
@@ -313,15 +316,15 @@ border:3px solid black;
     gap:6px;
 }
 .coordinateLineNumbers{
-    flex:0 0 28px;
-    width:28px;
+    flex:0 0 38px;
+    width:38px;
     box-sizing:border-box;
     padding:12px 5px;
     overflow:hidden;
     border:1px solid #c9def4;
     border-radius:12px;
     background:#eaf4ff;
-    color:#c9def4;
+    color:#426b96;
     font-family:monospace;
     font-size:14px;
     line-height:normal;
@@ -2114,8 +2117,12 @@ function updateCoordinateLineNumbers(textareaId){
     const lineNumbers = document.getElementById(textareaId + "LineNumbers");
     if(!textarea || !lineNumbers) return;
 
-    const lineCount = Math.max(1, textarea.value.split(/\n/).length);
-    lineNumbers.textContent = Array.from({length: lineCount}, (_, index) => index + 1).join("\n");
+    const lineCount = Math.max(1, textarea.value.split(/
+|
+|
+/).length);
+    lineNumbers.textContent = Array.from({length: lineCount}, (_, index) => String(index + 1)).join("
+");
     syncCoordinateLineNumberScroll(textareaId);
 }
 
@@ -2157,8 +2164,15 @@ async function copyPhantomOutput(textareaId){
 
 <script>
 document.addEventListener("DOMContentLoaded", function(){
-    updateCoordinateLineNumbers("gps");
-    updateCoordinateLineNumbers("gps2");
+    ["gps", "gps2"].forEach(function(id){
+        const textarea = document.getElementById(id);
+        if(textarea){
+            textarea.addEventListener("input", function(){ updateCoordinateLineNumbers(id); });
+            textarea.addEventListener("keyup", function(){ updateCoordinateLineNumbers(id); });
+            textarea.addEventListener("change", function(){ updateCoordinateLineNumbers(id); });
+        }
+        updateCoordinateLineNumbers(id);
+    });
 });
 </script>
 </body>
