@@ -16,15 +16,6 @@
 
 
 
-
-
-
-
-
-
-
-
-
 <!DOCTYPE html>
 <html lang="zh">
 <head>
@@ -154,6 +145,12 @@ box-sizing:border-box;
     line-height:1.4;
     white-space:pre;
     overflow-wrap:normal;
+}
+
+/* 點擊地圖編號後，左側對應座標以反白方式標記 */
+.coordinateInputWrap textarea::selection{
+    background:#24364b;
+    color:#ffffff;
 }
 button{width:100%;margin-top:8px;padding:14px}
 input{width:100%;margin-top:6px;padding:6px}
@@ -1303,14 +1300,57 @@ return list
 
 function createLabel(text){
 
+const labelText = String(text);
+
 return L.divIcon({
 
 className:"",
-html:'<div class="label">'+text+'</div>',
+html:'<div class="label" onclick="event.stopPropagation();selectCoordinatePoint(\''+labelText+'\')">'+labelText+'</div>',
 iconSize:[30,20]
 
 })
 
+}
+
+/* 點擊地圖編號：反白選取左側對應的座標行 */
+function selectCoordinatePoint(label){
+
+    const match = String(label).match(/^([AB])?(\d+)/i);
+    if(!match) return;
+
+    const routeName = (match[1] || "A").toUpperCase();
+    const pointNumber = parseInt(match[2], 10);
+    const textarea = document.getElementById(routeName === "B" ? "gps2" : "gps");
+
+    if(!textarea || !Number.isInteger(pointNumber) || pointNumber < 1) return;
+
+    const lines = textarea.value.split(/\r?\n/);
+    let validPointNumber = 0;
+    let targetLine = -1;
+
+    for(let i = 0; i < lines.length; i++){
+        const coordinate = lines[i].trim().replace(/^⚠️/, "");
+        const parts = coordinate.split(",");
+        if(parts.length === 2 &&
+           coordinate !== "" &&
+           !isNaN(parseFloat(parts[0])) &&
+           !isNaN(parseFloat(parts[1]))){
+            validPointNumber++;
+            if(validPointNumber === pointNumber){
+                targetLine = i;
+                break;
+            }
+        }
+    }
+
+    if(targetLine < 0) return;
+
+    const start = lines.slice(0, targetLine).reduce((sum, line) => sum + line.length + 1, 0);
+    const end = start + lines[targetLine].length;
+
+    textarea.focus();
+    textarea.setSelectionRange(start, end);
+    textarea.scrollTop = Math.max(0, targetLine * parseFloat(getComputedStyle(textarea).lineHeight || 20) - textarea.clientHeight / 2);
 }
 
 /* 建立種花S型路線 */
@@ -2150,6 +2190,11 @@ async function copyPhantomOutput(textareaId){
 
 
 
+
+
+
+
+你目前使用的是 ChatGPT 免費版。升級即可使用進階模型與更好的記憶功能，並創作更高品質的圖像。
 
 
 
