@@ -7,6 +7,10 @@
 
 
 
+
+
+
+
 <!DOCTYPE html>
 <html lang="zh">
 <head>
@@ -259,6 +263,39 @@ border:3px solid black;
     border-radius:20px;
     box-shadow:0 4px 12px rgba(0,0,0,0.1);
 }
+.downloadSectionTitle{
+    grid-column:1 / -1;
+    width:100%;
+    margin:0 0 4px;
+    padding:0 0 10px;
+    border-bottom:2px solid #c9def4;
+    color:#24364b;
+    font-size:22px;
+    font-weight:800;
+    box-sizing:border-box;
+}
+.phantomItem{
+    display:flex;
+    flex-direction:column;
+    min-width:0;
+    gap:8px;
+}
+.phantomOutput{
+    width:100%;
+    height:280px;
+    min-height:180px;
+    resize:vertical;
+    box-sizing:border-box;
+    padding:12px;
+    border:1px solid #c9def4;
+    border-radius:12px;
+    background:#f8fbff;
+    color:#24364b;
+    font-family:monospace;
+    font-size:12px;
+    line-height:1.5;
+    white-space:pre;
+}
 .mapPreviewControls > button,
 .buttonPanel > button,
 .bottomButtonPanel > button{
@@ -360,6 +397,7 @@ border:3px solid black;
     <!-- 中間區塊：其他主要路線按鈕 -->
     <!-- 地圖預覽下方：三種路線操作＋一鍵下載，四顆按鈕為同一區 -->
     <div class="buttonPanel">
+        <h2 class="downloadSectionTitle">路線下載區</h2>
         <button class="accurateBtn" onclick="downloadAccurateRoute()">🎯 準確收果</button>
         <button class="fruitBtn" onclick="downloadOriginal()">🎲 隨機收果</button>
         <button class="flowerBtn" onclick="downloadHex()">💐 種花路線</button>
@@ -368,8 +406,14 @@ border:3px solid black;
 
     <!-- 最下面：魅影功能獨立成一區 -->
     <div class="bottomButtonPanel">
-        <button class="phantomFruitBtn" onclick="downloadPhantomFruitRoute()">🥷 魅影收果路線</button>
-        <button class="phantomFlowerBtn" onclick="downloadPhantomFlowerRoute()">🥷 魅影種花路線</button>
+        <div class="phantomItem">
+            <button class="phantomFruitBtn" onclick="downloadPhantomFruitRoute()">🥷 魅影收果路線</button>
+            <textarea id="phantomFruitOutput" class="phantomOutput" placeholder="按下上方任一預覽按鈕後，這裡會自動顯示魅影收果 GPX 檔案完整內容" readonly></textarea>
+        </div>
+        <div class="phantomItem">
+            <button class="phantomFlowerBtn" onclick="downloadPhantomFlowerRoute()">🥷 魅影種花路線</button>
+            <textarea id="phantomFlowerOutput" class="phantomOutput" placeholder="按下上方任一預覽按鈕後，這裡會自動顯示魅影種花 GPX 檔案完整內容" readonly></textarea>
+        </div>
     </div>
 
 </div>
@@ -1253,6 +1297,8 @@ let base=parseInput()
 
 if(base.length==0) return
 
+updatePhantomTextBoxes();
+
 let route=[]
 
 // 只顯示原始GPS點
@@ -1294,6 +1340,8 @@ let base=parseInput()
 let r=parseFloat(document.getElementById("radius").value)||30
 
 if(base.length==0) return
+
+updatePhantomTextBoxes();
 
 let route=[]
 
@@ -1358,6 +1406,8 @@ let routeB=parseInput2()
 checkDuplicateBetweenRoutes()
 
 if(routeA.length==0 && routeB.length==0) return
+
+updatePhantomTextBoxes();
 
 let bounds=[]
 
@@ -1602,27 +1652,15 @@ let gpx=buildGPX(route,filename.replace(".gpx",""))
 downloadFile(filename,gpx)
 
 }
-/* 魅影收果路線 GPX
-   使用 GPX waypoint 格式（wpt），依照輸入順序編號 P1、P2……
-   自動略過重複座標，不另外新增點位
-*/
+/* 魅影路線共用產生器：預覽文字框與實際下載使用同一份 GPX 內容 */
 
-async function downloadPhantomFruitRoute(){
-
+function parsePhantomInput(){
     const rawText = document.getElementById("gps").value.trim();
-
-    if(!rawText){
-        alert("請先輸入 GPS 座標！");
-        return;
-    }
-
-    const lines = rawText.split(/\n+/);
+    const lines = rawText ? rawText.split(/\n+/) : [];
     const points = [];
     const seen = new Set();
 
     lines.forEach(line => {
-
-        // 移除重複點提示符號，避免影響座標解析
         const cleanLine = line.replace(/^[⚠️❗️]+/, "").trim();
         if(!cleanLine) return;
 
@@ -1635,7 +1673,6 @@ async function downloadPhantomFruitRoute(){
         if(!Number.isFinite(lat) || !Number.isFinite(lon)) return;
         if(lat < -90 || lat > 90 || lon < -180 || lon > 180) return;
 
-        // 以 7 位小數判斷重複，保留第一次出現的座標及原始順序
         const key = lat.toFixed(7) + "," + lon.toFixed(7);
         if(seen.has(key)) return;
 
@@ -1643,9 +1680,20 @@ async function downloadPhantomFruitRoute(){
         points.push({lat, lon});
     });
 
+    return points;
+}
+
+function getPhantomDateTime(){
+    const now = new Date();
+    const pad2 = value => String(value).padStart(2, "0");
+    return `${pad2(now.getMonth() + 1)}${pad2(now.getDate())}_${pad2(now.getHours())}${pad2(now.getMinutes())}`;
+}
+
+async function createPhantomFruitFile(){
+    const points = parsePhantomInput();
+
     if(points.length === 0){
-        alert("沒有找到有效的 GPS 座標，請檢查輸入內容！");
-        return;
+        return null;
     }
 
     let country = "未知地區";
@@ -1655,13 +1703,8 @@ async function downloadPhantomFruitRoute(){
         console.error("國家查詢失敗：", err);
     }
 
-    const count = points.length;
-    const filename = `${country}${count}點魅影收果.gpx`;
-
-    // metadata 名稱沿用範例的命名方式：收果版_MMDD_HHmm_(緯度,經度)
-    const now = new Date();
-    const pad2 = value => String(value).padStart(2, "0");
-    const dateTime = `${pad2(now.getMonth() + 1)}${pad2(now.getDate())}_${pad2(now.getHours())}${pad2(now.getMinutes())}`;
+    const filename = `${country}${points.length}點魅影收果.gpx`;
+    const dateTime = getPhantomDateTime();
     const coordinateLabel = `(${points[0].lat.toFixed(2)},${points[0].lon.toFixed(2)})`;
     const metadataName = `收果版_${dateTime}_${coordinateLabel}`;
 
@@ -1674,53 +1717,14 @@ async function downloadPhantomFruitRoute(){
     });
 
     gpx += '</gpx>';
-
-    downloadFile(filename, gpx);
+    return {filename, gpx};
 }
 
-
-/* 魅影種花路線 GPX
-   僅使用表單輸入的有效座標（自動略過重複座標）。
-   每個輸入座標生成一個半徑 25 公尺的八邊形繞圈：
-   8 個方向點位，最後回到該圈起點，共 9 個 GPX 航點。
-   不額外加入 P1 或任何表單以外的起始座標。
-*/
-async function downloadPhantomFlowerRoute(){
-
-    const rawText = document.getElementById("gps").value.trim();
-
-    if(!rawText){
-        alert("請先輸入 GPS 座標！");
-        return;
-    }
-
-    const lines = rawText.split(/\n+/);
-    const centers = [];
-    const seen = new Set();
-
-    lines.forEach(line => {
-        const cleanLine = line.replace(/^[⚠️❗️]+/, "").trim();
-        if(!cleanLine) return;
-
-        const parts = cleanLine.split(",");
-        if(parts.length !== 2) return;
-
-        const lat = parseFloat(parts[0].trim());
-        const lon = parseFloat(parts[1].trim());
-
-        if(!Number.isFinite(lat) || !Number.isFinite(lon)) return;
-        if(lat < -90 || lat > 90 || lon < -180 || lon > 180) return;
-
-        const key = lat.toFixed(7) + "," + lon.toFixed(7);
-        if(seen.has(key)) return;
-
-        seen.add(key);
-        centers.push({lat, lon});
-    });
+async function createPhantomFlowerFile(){
+    const centers = parsePhantomInput();
 
     if(centers.length === 0){
-        alert("沒有找到有效的 GPS 座標，請檢查輸入內容！");
-        return;
+        return null;
     }
 
     let country = "未知地區";
@@ -1730,8 +1734,7 @@ async function downloadPhantomFlowerRoute(){
         console.error("國家查詢失敗：", err);
     }
 
-    const count = centers.length;
-    const filename = `${country}${count}點 魅影種花.gpx`;
+    const filename = `${country}${centers.length}點 魅影種花.gpx`;
     const radiusMeters = 25;
     const points = [];
 
@@ -1741,22 +1744,19 @@ async function downloadPhantomFlowerRoute(){
 
         for(let i = 0; i < 8; i++){
             const bearing = i * 45;
-            const point = calculateDestination(
+            ring.push(calculateDestination(
                 center.lat,
                 center.lon,
                 bearing,
                 radiusMeters
-            );
-            ring.push(point);
+            ));
         }
 
         ring.forEach(point => points.push(point));
         points.push(ring[0]);
     });
 
-    const now = new Date();
-    const pad2 = value => String(value).padStart(2, "0");
-    const dateTime = `${pad2(now.getMonth() + 1)}${pad2(now.getDate())}_${pad2(now.getHours())}${pad2(now.getMinutes())}`;
+    const dateTime = getPhantomDateTime();
     const coordinateLabel = `(${centers[0].lat.toFixed(2)},${centers[0].lon.toFixed(2)})`;
     const metadataName = `繞圈版_${dateTime}_${coordinateLabel}`;
 
@@ -1769,8 +1769,58 @@ async function downloadPhantomFlowerRoute(){
     });
 
     gpx += '</gpx>';
+    return {filename, gpx};
+}
 
-    downloadFile(filename, gpx);
+async function updatePhantomTextBoxes(){
+    const fruitBox = document.getElementById("phantomFruitOutput");
+    const flowerBox = document.getElementById("phantomFlowerOutput");
+    if(!fruitBox || !flowerBox) return;
+
+    const points = parsePhantomInput();
+    if(points.length === 0){
+        fruitBox.value = "";
+        flowerBox.value = "";
+        return;
+    }
+
+    const [fruitFile, flowerFile] = await Promise.all([
+        createPhantomFruitFile(),
+        createPhantomFlowerFile()
+    ]);
+
+    fruitBox.value = fruitFile ? fruitFile.gpx : "";
+    flowerBox.value = flowerFile ? flowerFile.gpx : "";
+}
+
+/* 魅影收果路線下載 */
+async function downloadPhantomFruitRoute(){
+    const file = await createPhantomFruitFile();
+
+    if(!file){
+        alert("沒有找到有效的 GPS 座標，請檢查輸入內容！");
+        return;
+    }
+
+    const output = document.getElementById("phantomFruitOutput");
+    if(output) output.value = file.gpx;
+
+    downloadFile(file.filename, file.gpx);
+}
+
+/* 魅影種花路線下載 */
+async function downloadPhantomFlowerRoute(){
+    const file = await createPhantomFlowerFile();
+
+    if(!file){
+        alert("沒有找到有效的 GPS 座標，請檢查輸入內容！");
+        return;
+    }
+
+    const output = document.getElementById("phantomFlowerOutput");
+    if(output) output.value = file.gpx;
+
+    downloadFile(file.filename, file.gpx);
 }
 
 /* 一鍵下載 收果 + 種花 */
