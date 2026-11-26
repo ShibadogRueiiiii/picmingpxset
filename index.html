@@ -7,10 +7,6 @@
 
 
 
-
-
-
-
 <!DOCTYPE html>
 <html lang="zh">
 <head>
@@ -282,19 +278,60 @@ border:3px solid black;
 }
 .phantomOutput{
     width:100%;
-    height:280px;
-    min-height:180px;
+    height:140px;
+    min-height:90px;
     resize:vertical;
     box-sizing:border-box;
-    padding:12px;
+    padding:8px;
     border:1px solid #c9def4;
     border-radius:12px;
-    background:#f8fbff;
+    background:#eaf4ff;
     color:#24364b;
     font-family:monospace;
-    font-size:12px;
-    line-height:1.5;
+    font-size:10px;
+    line-height:1.4;
     white-space:pre;
+}
+.phantomCopyBtn{
+    width:100%;
+    margin-top:0;
+    padding:10px 12px;
+    border:1px solid #c9def4;
+    border-radius:10px;
+    background:#eaf4ff;
+    color:#24364b;
+    font-size:15px;
+    font-weight:700;
+    cursor:pointer;
+}
+.phantomCopyBtn:hover{filter:brightness(0.97);}
+.phantomSectionTitle{margin-top:2px;}
+.coordinateInputWrap{
+    display:flex;
+    align-items:stretch;
+    width:100%;
+    gap:6px;
+}
+.coordinateLineNumbers{
+    flex:0 0 28px;
+    width:28px;
+    box-sizing:border-box;
+    padding:12px 5px;
+    overflow:hidden;
+    border:1px solid #c9def4;
+    border-radius:12px;
+    background:#eaf4ff;
+    color:#c9def4;
+    font-family:monospace;
+    font-size:14px;
+    line-height:normal;
+    text-align:right;
+    white-space:pre;
+    user-select:none;
+}
+.coordinateInputWrap textarea{
+    flex:1 1 auto;
+    min-width:0;
 }
 .mapPreviewControls > button,
 .buttonPanel > button,
@@ -365,13 +402,19 @@ border:3px solid black;
         </div>
 
         <p>GPS 座標 A</p>
-        <textarea id="gps"></textarea>
+        <div class="coordinateInputWrap">
+            <div id="gpsLineNumbers" class="coordinateLineNumbers">1</div>
+            <textarea id="gps" oninput="updateCoordinateLineNumbers('gps')" onscroll="syncCoordinateLineNumberScroll('gps')"></textarea>
+        </div>
 
         <p style="margin-top:12px;">上傳 GPX 檔 B</p>
         <input type="file" id="fileInput2" accept=".gpx">
 
         <p style="margin-top:12px;">GPS 座標 B</p>
-        <textarea id="gps2"></textarea>
+        <div class="coordinateInputWrap">
+            <div id="gps2LineNumbers" class="coordinateLineNumbers">1</div>
+            <textarea id="gps2" oninput="updateCoordinateLineNumbers('gps2')" onscroll="syncCoordinateLineNumberScroll('gps2')"></textarea>
+        </div>
 
         <label>中心擴展距離 (公尺)</label>
         <input id="radius" type="number" value="30"/>
@@ -406,13 +449,16 @@ border:3px solid black;
 
     <!-- 最下面：魅影功能獨立成一區 -->
     <div class="bottomButtonPanel">
+        <h2 class="downloadSectionTitle phantomSectionTitle">魅影下載區</h2>
         <div class="phantomItem">
             <button class="phantomFruitBtn" onclick="downloadPhantomFruitRoute()">🥷 魅影收果路線</button>
             <textarea id="phantomFruitOutput" class="phantomOutput" placeholder="按下上方任一預覽按鈕後，這裡會自動顯示魅影收果 GPX 檔案完整內容" readonly></textarea>
+            <button class="phantomCopyBtn" onclick="copyPhantomOutput('phantomFruitOutput')">📋 一鍵複製收果內容</button>
         </div>
         <div class="phantomItem">
             <button class="phantomFlowerBtn" onclick="downloadPhantomFlowerRoute()">🥷 魅影種花路線</button>
             <textarea id="phantomFlowerOutput" class="phantomOutput" placeholder="按下上方任一預覽按鈕後，這裡會自動顯示魅影種花 GPX 檔案完整內容" readonly></textarea>
+            <button class="phantomCopyBtn" onclick="copyPhantomOutput('phantomFlowerOutput')">📋 一鍵複製種花內容</button>
         </div>
     </div>
 
@@ -2061,8 +2107,60 @@ dropZone.addEventListener("drop",e=>{
 
     })
 })
+
+/* A、B 座標輸入框行號 */
+function updateCoordinateLineNumbers(textareaId){
+    const textarea = document.getElementById(textareaId);
+    const lineNumbers = document.getElementById(textareaId + "LineNumbers");
+    if(!textarea || !lineNumbers) return;
+
+    const lineCount = Math.max(1, textarea.value.split(/\n/).length);
+    lineNumbers.textContent = Array.from({length: lineCount}, (_, index) => index + 1).join("\n");
+    syncCoordinateLineNumberScroll(textareaId);
+}
+
+function syncCoordinateLineNumberScroll(textareaId){
+    const textarea = document.getElementById(textareaId);
+    const lineNumbers = document.getElementById(textareaId + "LineNumbers");
+    if(textarea && lineNumbers){
+        lineNumbers.scrollTop = textarea.scrollTop;
+    }
+}
+
+/* 複製指定魅影 GPX 預覽框的完整文字 */
+async function copyPhantomOutput(textareaId){
+    const output = document.getElementById(textareaId);
+    if(!output || !output.value.trim()){
+        alert("目前沒有可複製的 GPX 內容，請先輸入座標並按下預覽！");
+        return;
+    }
+
+    try{
+        if(navigator.clipboard && window.isSecureContext){
+            await navigator.clipboard.writeText(output.value);
+        }else{
+            output.focus();
+            output.select();
+            const copied = document.execCommand("copy");
+            output.setSelectionRange(0, 0);
+            if(!copied) throw new Error("copy command failed");
+        }
+        alert("GPX 內容已複製！");
+    }catch(error){
+        output.focus();
+        output.select();
+        alert("瀏覽器未能自動複製，已選取文字，請再手動複製。");
+    }
+}
+
 </script>
 
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+    updateCoordinateLineNumbers("gps");
+    updateCoordinateLineNumbers("gps2");
+});
+</script>
 </body>
 </html>
 
