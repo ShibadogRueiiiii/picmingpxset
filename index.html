@@ -7,7 +7,12 @@
 
 
 
+貼上的文字 (1)(5).txt
+文件
+現在網頁沒辦法正常顯示地圖預覽了
+幫修復全部功能都要保持正常
 
+列出檔案並檢視內容與 JavaScript 正則語法
 
 
 <!DOCTYPE html>
@@ -316,15 +321,15 @@ border:3px solid black;
     gap:6px;
 }
 .coordinateLineNumbers{
-    flex:0 0 38px;
-    width:38px;
+    flex:0 0 28px;
+    width:28px;
     box-sizing:border-box;
     padding:12px 5px;
     overflow:hidden;
     border:1px solid #c9def4;
     border-radius:12px;
     background:#eaf4ff;
-    color:#426b96;
+    color:#c9def4;
     font-family:monospace;
     font-size:14px;
     line-height:normal;
@@ -2117,12 +2122,8 @@ function updateCoordinateLineNumbers(textareaId){
     const lineNumbers = document.getElementById(textareaId + "LineNumbers");
     if(!textarea || !lineNumbers) return;
 
-    const lineCount = Math.max(1, textarea.value.split(/
-|
-|
-/).length);
-    lineNumbers.textContent = Array.from({length: lineCount}, (_, index) => String(index + 1)).join("
-");
+    const lineCount = Math.max(1, textarea.value.split(/\n/).length);
+    lineNumbers.textContent = Array.from({length: lineCount}, (_, index) => index + 1).join("\n");
     syncCoordinateLineNumberScroll(textareaId);
 }
 
@@ -2164,15 +2165,8 @@ async function copyPhantomOutput(textareaId){
 
 <script>
 document.addEventListener("DOMContentLoaded", function(){
-    ["gps", "gps2"].forEach(function(id){
-        const textarea = document.getElementById(id);
-        if(textarea){
-            textarea.addEventListener("input", function(){ updateCoordinateLineNumbers(id); });
-            textarea.addEventListener("keyup", function(){ updateCoordinateLineNumbers(id); });
-            textarea.addEventListener("change", function(){ updateCoordinateLineNumbers(id); });
-        }
-        updateCoordinateLineNumbers(id);
-    });
+    updateCoordinateLineNumbers("gps");
+    updateCoordinateLineNumbers("gps2");
 });
 </script>
 </body>
