@@ -16,6 +16,7 @@
 
 
 
+
 <!DOCTYPE html>
 <html lang="zh">
 <head>
@@ -437,6 +438,7 @@ border:3px solid black;
         </div>
         <div class="mainMapSection">
             <h2>🗺️ GPS 路線總覽地圖，點擊地圖中任意一點即可獲得該點座標</h2>
+            <p style="margin:8px 0 12px;font-size:15px;font-weight:bold;color:#24364b;">若按路線預覽後，可點擊圓圈，左側輸入區將會自動反色</p>
             <div id="map"></div>
         </div>
     </div>
@@ -744,13 +746,13 @@ const fastFlowerDownloadControl = L.control({ position: "topright" });
 
 fastFlowerDownloadControl.onAdd = function(){
     const container = L.DomUtil.create("div", "leaflet-bar");
-    container.style.cssText = "background:rgba(255,255,255,.96);border:0;box-shadow:none;display:none;padding:5px;border-radius:8px;";
+    container.style.cssText = "background:rgba(255,255,255,.96);border:0;box-shadow:none;display:none;padding:10px;border-radius:12px;min-width:240px;";
 
     const makeButton = (label, background, handler) => {
         const button = L.DomUtil.create("button", "", container);
         button.type = "button";
         button.innerHTML = label;
-        button.style.cssText = `display:block;width:100%;margin:3px 0;padding:8px 10px;background:${background};color:#fff;border:0;border-radius:6px;font-weight:bold;font-size:12px;cursor:pointer;white-space:nowrap;`;
+        button.style.cssText = `display:block;box-sizing:border-box;width:100%;margin:6px 0;padding:16px 20px;background:${background};color:#fff;border:0;border-radius:12px;font-weight:bold;font-size:24px;cursor:pointer;white-space:nowrap;`;
         button.addEventListener("click", function(e){
             L.DomEvent.stop(e);
             handler();
@@ -2194,7 +2196,6 @@ async function copyPhantomOutput(textareaId){
 
 
 
-你目前使用的是 ChatGPT 免費版。升級即可使用進階模型與更好的記憶功能，並創作更高品質的圖像。
 
 
 
