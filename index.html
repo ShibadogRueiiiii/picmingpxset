@@ -24,6 +24,8 @@
 
 
 
+
+
 <!DOCTYPE html>
 <html lang="zh">
 <head>
@@ -173,106 +175,84 @@ border:3px solid black;
 
 }
 
-/* ===== 版面配置調整：上方輸入＋地圖，下方按鈕 ===== */
+/* ===== 版面配置：左側輸入；右側預覽按鈕＋地圖；中段操作按鈕；底部下載按鈕 ===== */
 .container{
     display:grid;
     grid-template-columns:minmax(0, 1fr) minmax(0, 2fr);
     grid-template-areas:
-        "input map"
-        "buttons buttons";
+        "input right"
+        "middle middle"
+        "bottom bottom";
     gap:16px;
     padding:16px;
-    /* 讓左側輸入區與右側地圖區在同一列自動等高，底部切齊 */
     align-items:stretch;
 }
-
-.inputPanel{
-    grid-area:input;
+.inputPanel{grid-area:input; min-width:0;}
+.rightMapSection{
+    grid-area:right;
     min-width:0;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
 }
-
+.mapPreviewControls{
+    display:grid;
+    grid-template-columns:repeat(3, minmax(0, 1fr));
+    gap:12px;
+}
 .mainMapSection{
-    grid-area:map;
     min-width:0;
     margin:0;
+    flex:1 1 auto;
 }
-
 .buttonPanel{
-    grid-area:buttons;
+    grid-area:middle;
     min-width:0;
     display:grid;
     grid-template-columns:repeat(3, minmax(0, 1fr));
-    grid-template-rows:auto auto auto auto;
     gap:12px;
     background:white;
     padding:18px;
     border-radius:20px;
     box-shadow:0 4px 12px rgba(0,0,0,0.1);
 }
-
-/* 第一橫列：地圖預覽、雙路線預覽、種花路線預覽 */
-.buttonPanel > button:nth-child(1){grid-column:1;grid-row:1;}
-.buttonPanel > button:nth-child(2){grid-column:2;grid-row:1;}
-.buttonPanel > button:nth-child(3){grid-column:3;grid-row:1;}
-
-/* 第二橫列：準確收果、隨機收果、種花路線 */
-.buttonPanel > button:nth-child(4){grid-column:1;grid-row:2;}
-.buttonPanel > button:nth-child(5){grid-column:2;grid-row:2;}
-.buttonPanel > button:nth-child(6){grid-column:3;grid-row:2;}
-
-/* 第三橫列：一鍵下載，單獨一列 */
-.buttonPanel > button:nth-child(7){grid-column:1 / -1;grid-row:3;}
-
-/* 第四橫列：兩個魅影功能 */
-.buttonPanel > button:nth-child(8){grid-column:1;grid-row:4;}
-.buttonPanel > button:nth-child(9){grid-column:2;grid-row:4;}
-
-.buttonPanel > button{
+.bottomButtonPanel{
+    grid-area:bottom;
+    min-width:0;
+    display:grid;
+    grid-template-columns:repeat(3, minmax(0, 1fr));
+    gap:12px;
+    background:white;
+    padding:18px;
+    border-radius:20px;
+    box-shadow:0 4px 12px rgba(0,0,0,0.1);
+}
+.mapPreviewControls > button,
+.buttonPanel > button,
+.bottomButtonPanel > button{
     width:100%;
     min-width:0;
     margin-top:0;
     box-sizing:border-box;
 }
-
-/* 按鈕文字放大 1.5 倍：原本 16px 調為 24px，15px 調為 22.5px */
-.buttonPanel > button.previewBtn,
-.buttonPanel > button.compareBtn,
-.buttonPanel > button.accurateBtn,
-.buttonPanel > button.allDownloadBtn,
-.buttonPanel > button.phantomFruitBtn,
-.buttonPanel > button.phantomFlowerBtn{
-    font-size:24px;
-}
-
-.buttonPanel > button.hexPreviewBtn,
-.buttonPanel > button.fruitBtn,
-.buttonPanel > button.flowerBtn{
-    font-size:22.5px;
-}
-
-/* 小螢幕改為上下排列，避免輸入區與地圖過窄 */
-@media (max-width: 800px){
+/* 按鈕文字維持放大 1.5 倍 */
+.previewBtn,.compareBtn,.accurateBtn,.allDownloadBtn,.phantomFruitBtn,.phantomFlowerBtn{font-size:24px;}
+.hexPreviewBtn,.fruitBtn,.flowerBtn{font-size:22.5px;}
+/* 中間區塊：三個主要路線操作 */
+.buttonPanel > button{grid-column:auto;}
+/* 最底部：一鍵下載獨占一列，兩個魅影功能並排 */
+.bottomButtonPanel > .allDownloadBtn{grid-column:1 / -1;}
+.bottomButtonPanel > .phantomFruitBtn{grid-column:1;}
+.bottomButtonPanel > .phantomFlowerBtn{grid-column:2;}
+@media (max-width:800px){
     .container{
         grid-template-columns:minmax(0, 1fr);
-        grid-template-areas:
-            "input"
-            "map"
-            "buttons";
+        grid-template-areas:"input" "right" "middle" "bottom";
     }
-    .buttonPanel{
-        grid-template-columns:repeat(2, minmax(0, 1fr));
-        grid-template-rows:auto;
-    }
-    .buttonPanel > button{
-        grid-column:auto !important;
-        grid-row:auto !important;
-    }
-    .buttonPanel > button:nth-child(7){
-        grid-column:1 / -1 !important;
-    }
-    #map{
-        height:500px;
-    }
+    .mapPreviewControls{grid-template-columns:1fr;}
+    .buttonPanel,.bottomButtonPanel{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .bottomButtonPanel > .allDownloadBtn{grid-column:1 / -1;}
+    #map{height:500px;}
 }
 
 </style>
@@ -313,36 +293,31 @@ border:3px solid black;
 
     </div>
 
-    <!-- 中間：主地圖 -->
-    <div class="mainMapSection">
-
-        <h2>🗺️ GPS 路線總覽地圖，點擊地圖中任意一點即可獲得該點座標</h2>
-
-        <div id="map"></div>
-
+    <!-- 右側上方：三個預覽按鈕，地圖在其下方 -->
+    <div class="rightMapSection">
+        <div class="mapPreviewControls">
+            <button class="previewBtn" onclick="preview()">🗺️ 地圖預覽</button>
+            <button class="compareBtn" onclick="previewDualRoute()">🧭 雙路線預覽</button>
+            <button class="hexPreviewBtn" onclick="previewHexRoute()">🌸 種花路線預覽</button>
+        </div>
+        <div class="mainMapSection">
+            <h2>🗺️ GPS 路線總覽地圖，點擊地圖中任意一點即可獲得該點座標</h2>
+            <div id="map"></div>
+        </div>
     </div>
 
-    <!-- 右邊：按鈕區 -->
+    <!-- 中間區塊：其他主要路線按鈕 -->
     <div class="buttonPanel">
-
-        <button class="previewBtn" onclick="preview()">🗺️ 地圖預覽</button>
-
-        <button class="compareBtn" onclick="previewDualRoute()">🧭 雙路線預覽</button>
-
-        <button class="hexPreviewBtn" onclick="previewHexRoute()">🌸 種花路線預覽</button>
-
         <button class="accurateBtn" onclick="downloadAccurateRoute()">🎯 準確收果路線</button>
-
         <button class="fruitBtn" onclick="downloadOriginal()">🎲 隨機收果路線 GPX</button>
-
         <button class="flowerBtn" onclick="downloadHex()">💐 種花路線 GPX</button>
+    </div>
 
+    <!-- 最下面：下載與魅影功能，排列照舊 -->
+    <div class="bottomButtonPanel">
         <button class="allDownloadBtn" onclick="downloadAllRoutes()">⬇️ 一鍵下載 收果 + 種花</button>
-
         <button class="phantomFruitBtn" onclick="downloadPhantomFruitRoute()">🥷 魅影收果路線</button>
-
         <button class="phantomFlowerBtn" onclick="downloadPhantomFlowerRoute()">🥷 魅影種花路線</button>
-
     </div>
 
 </div>
