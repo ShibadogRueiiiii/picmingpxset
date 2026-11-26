@@ -147,6 +147,92 @@ overflow:hidden;
 border:3px solid black;
 
 }
+
+/* ===== 版面配置調整：上方輸入＋地圖，下方按鈕 ===== */
+.container{
+    display:grid;
+    grid-template-columns:minmax(0, 1fr) minmax(0, 2fr);
+    grid-template-areas:
+        "input map"
+        "buttons buttons";
+    gap:16px;
+    padding:16px;
+    align-items:start;
+}
+
+.inputPanel{
+    grid-area:input;
+    min-width:0;
+}
+
+.mainMapSection{
+    grid-area:map;
+    min-width:0;
+    margin:0;
+}
+
+.buttonPanel{
+    grid-area:buttons;
+    min-width:0;
+    display:grid;
+    grid-template-columns:repeat(3, minmax(0, 1fr));
+    grid-template-rows:auto auto auto auto;
+    gap:12px;
+    background:white;
+    padding:18px;
+    border-radius:20px;
+    box-shadow:0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* 第一橫列：地圖預覽、雙路線預覽、種花路線預覽 */
+.buttonPanel > button:nth-child(1){grid-column:1;grid-row:1;}
+.buttonPanel > button:nth-child(2){grid-column:2;grid-row:1;}
+.buttonPanel > button:nth-child(3){grid-column:3;grid-row:1;}
+
+/* 第二橫列：準確收果、隨機收果、種花路線 */
+.buttonPanel > button:nth-child(4){grid-column:1;grid-row:2;}
+.buttonPanel > button:nth-child(5){grid-column:2;grid-row:2;}
+.buttonPanel > button:nth-child(6){grid-column:3;grid-row:2;}
+
+/* 第三橫列：一鍵下載，單獨一列 */
+.buttonPanel > button:nth-child(7){grid-column:1 / -1;grid-row:3;}
+
+/* 第四橫列：兩個魅影功能 */
+.buttonPanel > button:nth-child(8){grid-column:1;grid-row:4;}
+.buttonPanel > button:nth-child(9){grid-column:2;grid-row:4;}
+
+.buttonPanel > button{
+    width:100%;
+    min-width:0;
+    margin-top:0;
+    box-sizing:border-box;
+}
+
+/* 小螢幕改為上下排列，避免輸入區與地圖過窄 */
+@media (max-width: 800px){
+    .container{
+        grid-template-columns:minmax(0, 1fr);
+        grid-template-areas:
+            "input"
+            "map"
+            "buttons";
+    }
+    .buttonPanel{
+        grid-template-columns:repeat(2, minmax(0, 1fr));
+        grid-template-rows:auto;
+    }
+    .buttonPanel > button{
+        grid-column:auto !important;
+        grid-row:auto !important;
+    }
+    .buttonPanel > button:nth-child(7){
+        grid-column:1 / -1 !important;
+    }
+    #map{
+        height:500px;
+    }
+}
+
 </style>
 </head>
 
@@ -1832,6 +1918,9 @@ dropZone.addEventListener("drop",e=>{
 
 
 
+
+讓 Astra 協助你處理最艱鉅的工作
+升級至 Pro，即可取得 Astra 的完整存取權限。Astra 是我們最擅長處理複雜任務的模型。
 
 
 
