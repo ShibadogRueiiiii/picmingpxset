@@ -17,6 +17,12 @@
 
 
 
+
+
+
+
+
+
 <!DOCTYPE html>
 <html lang="zh">
 <head>
@@ -557,7 +563,12 @@ maxZoom:19
    + 下載最快種花路線
 ================================ */
 
+// 記錄使用者最近一次在地圖上點選的位置，供左下角快速置中按鈕使用
+let lastMapClickedLatLng = null;
+
 map.on("click", function(e){
+
+    lastMapClickedLatLng = e.latlng;
 
     const lat = e.latlng.lat.toFixed(7);
     const lon = e.latlng.lng.toFixed(7);
@@ -636,6 +647,56 @@ map.on("click", function(e){
         .setContent(popupContent)
         .openOn(map);
 });
+
+
+/* 地圖左下角：將最近點選的位置置中，並放大至周圍約 500 公尺 */
+const centerZoomControl = L.control({ position: "bottomleft" });
+
+centerZoomControl.onAdd = function(){
+    const container = L.DomUtil.create("div", "leaflet-bar");
+    container.style.cssText = "background:transparent;border:0;box-shadow:none;";
+
+    const button = L.DomUtil.create("button", "", container);
+    button.type = "button";
+    button.innerHTML = "📍 置中並放大";
+    button.title = "將最近點選的地圖位置置中，放大檢視周圍約 500 公尺";
+    button.style.cssText = "display:block;width:auto;margin:0;padding:10px 14px;background:#1565c0;color:#fff;border:0;border-radius:9px;font-size:14px;font-weight:bold;box-shadow:0 2px 8px rgba(0,0,0,.3);cursor:pointer;white-space:nowrap;";
+
+    button.addEventListener("click", function(e){
+        L.DomEvent.stop(e);
+
+        if(!lastMapClickedLatLng){
+            alert("請先在地圖上點選一個位置，再使用置中放大功能。");
+            return;
+        }
+
+        const lat = lastMapClickedLatLng.lat;
+        const lon = lastMapClickedLatLng.lng;
+
+        // 以點位為中心，向上下左右各延伸約 500 公尺
+        const north = calculateDestination(lat, lon, 0, 500);
+        const east  = calculateDestination(lat, lon, 90, 500);
+        const south = calculateDestination(lat, lon, 180, 500);
+        const west  = calculateDestination(lat, lon, 270, 500);
+
+        const bounds = L.latLngBounds(
+            [south.lat, west.lon],
+            [north.lat, east.lon]
+        );
+
+        map.fitBounds(bounds, {
+            padding: [35, 35],
+            maxZoom: 17,
+            animate: true
+        });
+    });
+
+    L.DomEvent.disableClickPropagation(container);
+    L.DomEvent.disableScrollPropagation(container);
+    return container;
+};
+
+centerZoomControl.addTo(map);
 
 
 /* 複製地圖點擊座標 */
@@ -2196,6 +2257,7 @@ async function copyPhantomOutput(textareaId){
 
 
 
+你已達資料分析上限。升級至 ChatGPT Plus，或 於明天的 下午3:10 後 再試一次
 
 
 
