@@ -20,8 +20,6 @@
 
 
 
-
-
 <!DOCTYPE html>
 <html lang="zh">
 <head>
@@ -234,10 +232,10 @@ border:3px solid black;
 /* 按鈕文字維持放大 1.5 倍 */
 .previewBtn,.compareBtn,.accurateBtn,.allDownloadBtn,.phantomFruitBtn,.phantomFlowerBtn{font-size:24px;}
 .hexPreviewBtn,.fruitBtn,.flowerBtn{font-size:22.5px;}
-/* 中間區塊：三個主要路線操作 */
+/* 地圖下方操作區：前三顆並排，一鍵下載獨占下一列 */
 .buttonPanel > button{grid-column:auto;}
-/* 最底部：一鍵下載獨占一列，兩個魅影按鈕各佔半列、填滿整行 */
-.bottomButtonPanel > .allDownloadBtn{grid-column:1 / -1;}
+.buttonPanel > .allDownloadBtn{grid-column:1 / -1;}
+/* 最底部魅影專區：兩顆按鈕各佔半列、填滿整行 */
 @media (max-width:800px){
     .container{
         grid-template-columns:minmax(0, 1fr);
@@ -245,7 +243,7 @@ border:3px solid black;
     }
     .mapPreviewControls{grid-template-columns:1fr;}
     .buttonPanel,.bottomButtonPanel{grid-template-columns:repeat(2,minmax(0,1fr));}
-    .bottomButtonPanel > .allDownloadBtn{grid-column:1 / -1;}
+    .buttonPanel > .allDownloadBtn{grid-column:1 / -1;}
     #map{height:500px;}
 }
 
@@ -301,15 +299,16 @@ border:3px solid black;
     </div>
 
     <!-- 中間區塊：其他主要路線按鈕 -->
+    <!-- 地圖預覽下方：三種路線操作＋一鍵下載，四顆按鈕為同一區 -->
     <div class="buttonPanel">
-        <button class="accurateBtn" onclick="downloadAccurateRoute()">🎯 準確收果路線</button>
-        <button class="fruitBtn" onclick="downloadOriginal()">🎲 隨機收果路線 GPX</button>
-        <button class="flowerBtn" onclick="downloadHex()">💐 種花路線 GPX</button>
+        <button class="accurateBtn" onclick="downloadAccurateRoute()">🎯 準確收果</button>
+        <button class="fruitBtn" onclick="downloadOriginal()">🎲 隨機收果</button>
+        <button class="flowerBtn" onclick="downloadHex()">💐 種花路線</button>
+        <button class="allDownloadBtn" onclick="downloadAllRoutes()">⬇️ 一鍵下載收果＋種花路線</button>
     </div>
 
-    <!-- 最下面：下載與魅影功能，排列照舊 -->
+    <!-- 最下面：魅影功能獨立成一區 -->
     <div class="bottomButtonPanel">
-        <button class="allDownloadBtn" onclick="downloadAllRoutes()">⬇️ 一鍵下載 收果 + 種花</button>
         <button class="phantomFruitBtn" onclick="downloadPhantomFruitRoute()">🥷 魅影收果路線</button>
         <button class="phantomFlowerBtn" onclick="downloadPhantomFlowerRoute()">🥷 魅影種花路線</button>
     </div>
@@ -1925,9 +1924,6 @@ dropZone.addEventListener("drop",e=>{
 
 </body>
 </html>
-
-
-
 
 
 
