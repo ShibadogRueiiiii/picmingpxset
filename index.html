@@ -1,4 +1,30 @@
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <!DOCTYPE html>
 <html lang="zh">
 <head>
@@ -121,19 +147,13 @@ box-sizing:border-box;
 
 }
 
-/* 座標輸入框與左側行號使用完全相同的字體尺寸及行高 */
+/* 座標輸入框 */
 .coordinateInputWrap textarea{
     font-family:monospace;
     font-size:14px;
     line-height:1.4;
     white-space:pre;
     overflow-wrap:normal;
-}
-.coordinateLineNumbers{
-    font-size:14px;
-    line-height:1.4;
-    padding-top:12px;
-    padding-bottom:12px;
 }
 button{width:100%;margin-top:8px;padding:14px}
 input{width:100%;margin-top:6px;padding:6px}
@@ -315,29 +335,8 @@ border:3px solid black;
 .phantomCopyBtn:hover{filter:brightness(0.97);}
 .phantomSectionTitle{margin-top:2px;}
 .coordinateInputWrap{
-    display:flex;
-    align-items:stretch;
+    display:block;
     width:100%;
-    gap:6px;
-}
-.coordinateLineNumbers{
-    display:block !important; /* 避免 flex 將換行文字拆成橫向排列 */
-    flex:0 0 38px;
-    width:38px;
-    min-width:38px;
-    box-sizing:border-box;
-    padding:12px 5px;
-    overflow:hidden;
-    border:1px solid #c9def4;
-    border-radius:12px;
-    background:#eaf4ff;
-    color:#426b96;
-    font-family:monospace;
-    font-size:14px;
-    line-height:1.4;
-    text-align:right;
-    white-space:pre !important; /* 每個行號依照換行直向顯示 */
-    user-select:none;
 }
 .coordinateInputWrap textarea{
     flex:1 1 auto;
@@ -413,8 +412,7 @@ border:3px solid black;
 
         <p>GPS 座標 A</p>
         <div class="coordinateInputWrap">
-            <div id="gpsLineNumbers" class="coordinateLineNumbers">1</div>
-            <textarea id="gps" oninput="updateCoordinateLineNumbers('gps')" onscroll="syncCoordinateLineNumberScroll('gps')"></textarea>
+            <textarea id="gps"></textarea>
         </div>
 
         <p style="margin-top:12px;">上傳 GPX 檔 B</p>
@@ -422,8 +420,7 @@ border:3px solid black;
 
         <p style="margin-top:12px;">GPS 座標 B</p>
         <div class="coordinateInputWrap">
-            <div id="gps2LineNumbers" class="coordinateLineNumbers">1</div>
-            <textarea id="gps2" oninput="updateCoordinateLineNumbers('gps2')" onscroll="syncCoordinateLineNumberScroll('gps2')"></textarea>
+            <textarea id="gps2"></textarea>
         </div>
 
         <label>中心擴展距離 (公尺)</label>
@@ -924,7 +921,6 @@ result.push(lat+","+lon)
 })
 
 document.getElementById("gps").value=result.join("\n");
-updateCoordinateLineNumbers("gps")
 
 document.getElementById("count").innerText=
 "GPS點位數量："+result.length
@@ -1018,7 +1014,6 @@ newLines[d.line2-1]="⚠️"+newLines[d.line2-1]
 })
 
 document.getElementById("gps").value=newLines.join("\n");
-updateCoordinateLineNumbers("gps")
 alert(msg)
 
 }
@@ -1063,7 +1058,6 @@ result.push(lat+","+lon)
 })
 
 document.getElementById("gps2").value=result.join("\n");
-updateCoordinateLineNumbers("gps2")
 
 }
 
@@ -1149,7 +1143,6 @@ newLines[d.line2-1]="⚠️"+newLines[d.line2-1]
 })
 
 document.getElementById("gps2").value=newLines.join("\n");
-updateCoordinateLineNumbers("gps2")
 alert(msg)
 
 }
@@ -2122,25 +2115,6 @@ dropZone.addEventListener("drop",e=>{
     })
 })
 
-/* A、B 座標輸入框行號 */
-function updateCoordinateLineNumbers(textareaId){
-    const textarea = document.getElementById(textareaId);
-    const lineNumbers = document.getElementById(textareaId + "LineNumbers");
-    if(!textarea || !lineNumbers) return;
-
-    // 依照輸入框實際換行數產生行號，支援 Windows、Mac 與 Unix 換行格式
-    const lineCount = Math.max(1, textarea.value.split(/\r\n|\r|\n/).length);
-    lineNumbers.textContent = Array.from({length: lineCount}, (_, index) => String(index + 1)).join("\n");
-    syncCoordinateLineNumberScroll(textareaId);
-}
-function syncCoordinateLineNumberScroll(textareaId){
-    const textarea = document.getElementById(textareaId);
-    const lineNumbers = document.getElementById(textareaId + "LineNumbers");
-    if(textarea && lineNumbers){
-        lineNumbers.scrollTop = textarea.scrollTop;
-    }
-}
-
 /* 複製指定魅影 GPX 預覽框的完整文字 */
 async function copyPhantomOutput(textareaId){
     const output = document.getElementById(textareaId);
@@ -2169,19 +2143,6 @@ async function copyPhantomOutput(textareaId){
 
 </script>
 
-<script>
-document.addEventListener("DOMContentLoaded", function(){
-    ["gps", "gps2"].forEach(function(id){
-        const textarea = document.getElementById(id);
-        if(textarea){
-            textarea.addEventListener("input", function(){ updateCoordinateLineNumbers(id); });
-            textarea.addEventListener("keyup", function(){ updateCoordinateLineNumbers(id); });
-            textarea.addEventListener("change", function(){ updateCoordinateLineNumbers(id); });
-        }
-        updateCoordinateLineNumbers(id);
-    });
-});
-</script>
 </body>
 </html>
 
