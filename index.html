@@ -99,6 +99,8 @@ cursor:pointer;transition:0.2s;box-shadow:0 6px 16px rgba(0,114,255,0.35);}
 /* 魅影收果路線按鈕 */
 .phantomFruitBtn{background:linear-gradient(135deg,#303030,#6a1b9a);color:white;border:none;padding:14px;border-radius:14px;font-size:16px;font-weight:bold;cursor:pointer;transition:0.2s;box-shadow:0 6px 16px rgba(74,20,140,0.35);}
 .phantomFruitBtn:hover{transform:translateY(-2px) scale(1.02);background:linear-gradient(135deg,#424242,#7b1fa2);}
+.phantomFlowerBtn{background:linear-gradient(135deg,#00695c,#00a884);color:white;border:none;padding:14px;border-radius:14px;font-size:16px;font-weight:bold;cursor:pointer;transition:0.2s;box-shadow:0 6px 16px rgba(0,105,92,0.35);}
+.phantomFlowerBtn:hover{transform:translateY(-2px) scale(1.02);background:linear-gradient(135deg,#008577,#26a69a);}
 
 .compareBtn{background:linear-gradient(135deg,#424242,#212121);color:white;border:none;padding:14px;border-radius:14px;font-size:16px;font-weight:bold;cursor:pointer;transition:0.2s;box-shadow:0 6px 16px rgba(0,0,0,0.35);}
 .compareBtn:hover{transform:translateY(-2px) scale(1.02);}
@@ -210,6 +212,8 @@ border:3px solid black;
         <button class="allDownloadBtn" onclick="downloadAllRoutes()">⬇️ 一鍵下載 收果 + 種花</button>
 
         <button class="phantomFruitBtn" onclick="downloadPhantomFruitRoute()">🥷 魅影收果路線</button>
+
+        <button class="phantomFlowerBtn" onclick="downloadPhantomFlowerRoute()">🥷 魅影種花路線</button>
 
     </div>
 
@@ -1473,6 +1477,101 @@ async function downloadPhantomFruitRoute(){
     const dateTime = `${pad2(now.getMonth() + 1)}${pad2(now.getDate())}_${pad2(now.getHours())}${pad2(now.getMinutes())}`;
     const coordinateLabel = `(${points[0].lat.toFixed(2)},${points[0].lon.toFixed(2)})`;
     const metadataName = `收果版_${dateTime}_${coordinateLabel}`;
+
+    let gpx = '<?xml version="1.0" encoding="UTF-8"?>\n';
+    gpx += '<gpx version="1.1" creator="warmwind-gpx">\n';
+    gpx += `  <metadata><name>${metadataName}</name></metadata>\n`;
+
+    points.forEach((point, index) => {
+        gpx += `  <wpt lat="${point.lat}" lon="${point.lon}"><name>P${index + 1}</name></wpt>\n`;
+    });
+
+    gpx += '</gpx>';
+
+    downloadFile(filename, gpx);
+}
+
+
+/* 魅影種花路線 GPX
+   僅使用表單輸入的有效座標（自動略過重複座標）。
+   每個輸入座標生成一個半徑 25 公尺的八邊形繞圈：
+   8 個方向點位，最後回到該圈起點，共 9 個 GPX 航點。
+   不額外加入 P1 或任何表單以外的起始座標。
+*/
+async function downloadPhantomFlowerRoute(){
+
+    const rawText = document.getElementById("gps").value.trim();
+
+    if(!rawText){
+        alert("請先輸入 GPS 座標！");
+        return;
+    }
+
+    const lines = rawText.split(/\n+/);
+    const centers = [];
+    const seen = new Set();
+
+    lines.forEach(line => {
+        const cleanLine = line.replace(/^[⚠️❗️]+/, "").trim();
+        if(!cleanLine) return;
+
+        const parts = cleanLine.split(",");
+        if(parts.length !== 2) return;
+
+        const lat = parseFloat(parts[0].trim());
+        const lon = parseFloat(parts[1].trim());
+
+        if(!Number.isFinite(lat) || !Number.isFinite(lon)) return;
+        if(lat < -90 || lat > 90 || lon < -180 || lon > 180) return;
+
+        const key = lat.toFixed(7) + "," + lon.toFixed(7);
+        if(seen.has(key)) return;
+
+        seen.add(key);
+        centers.push({lat, lon});
+    });
+
+    if(centers.length === 0){
+        alert("沒有找到有效的 GPS 座標，請檢查輸入內容！");
+        return;
+    }
+
+    let country = "未知地區";
+    try {
+        country = await getCountry(centers[0].lat, centers[0].lon);
+    } catch(err) {
+        console.error("國家查詢失敗：", err);
+    }
+
+    const count = centers.length;
+    const filename = `${country}${count}點 魅影種花.gpx`;
+    const radiusMeters = 25;
+    const points = [];
+
+    // 每個輸入座標依序生成八邊形，最後重複第一個頂點以完成閉合。
+    centers.forEach(center => {
+        const ring = [];
+
+        for(let i = 0; i < 8; i++){
+            const bearing = i * 45;
+            const point = calculateDestination(
+                center.lat,
+                center.lon,
+                bearing,
+                radiusMeters
+            );
+            ring.push(point);
+        }
+
+        ring.forEach(point => points.push(point));
+        points.push(ring[0]);
+    });
+
+    const now = new Date();
+    const pad2 = value => String(value).padStart(2, "0");
+    const dateTime = `${pad2(now.getMonth() + 1)}${pad2(now.getDate())}_${pad2(now.getHours())}${pad2(now.getMinutes())}`;
+    const coordinateLabel = `(${centers[0].lat.toFixed(2)},${centers[0].lon.toFixed(2)})`;
+    const metadataName = `繞圈版_${dateTime}_${coordinateLabel}`;
 
     let gpx = '<?xml version="1.0" encoding="UTF-8"?>\n';
     gpx += '<gpx version="1.1" creator="warmwind-gpx">\n';
