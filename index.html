@@ -1,4 +1,29 @@
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <!DOCTYPE html>
 <html lang="zh">
 <head>
@@ -157,7 +182,8 @@ border:3px solid black;
         "buttons buttons";
     gap:16px;
     padding:16px;
-    align-items:start;
+    /* 讓左側輸入區與右側地圖區在同一列自動等高，底部切齊 */
+    align-items:stretch;
 }
 
 .inputPanel{
@@ -206,6 +232,22 @@ border:3px solid black;
     min-width:0;
     margin-top:0;
     box-sizing:border-box;
+}
+
+/* 按鈕文字放大 1.5 倍：原本 16px 調為 24px，15px 調為 22.5px */
+.buttonPanel > button.previewBtn,
+.buttonPanel > button.compareBtn,
+.buttonPanel > button.accurateBtn,
+.buttonPanel > button.allDownloadBtn,
+.buttonPanel > button.phantomFruitBtn,
+.buttonPanel > button.phantomFlowerBtn{
+    font-size:24px;
+}
+
+.buttonPanel > button.hexPreviewBtn,
+.buttonPanel > button.fruitBtn,
+.buttonPanel > button.flowerBtn{
+    font-size:22.5px;
 }
 
 /* 小螢幕改為上下排列，避免輸入區與地圖過窄 */
@@ -1918,9 +1960,6 @@ dropZone.addEventListener("drop",e=>{
 
 
 
-
-讓 Astra 協助你處理最艱鉅的工作
-升級至 Pro，即可取得 Astra 的完整存取權限。Astra 是我們最擅長處理複雜任務的模型。
 
 
 
