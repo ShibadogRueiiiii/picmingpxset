@@ -679,6 +679,15 @@ border:3px solid black;
 }
 
 
+/* 刷盆路線搜尋框 */
+.driveRouteSearch{display:flex;align-items:center;gap:10px;margin:0 0 18px;width:100%;box-sizing:border-box;}
+.driveRouteSearchInput{width:100%;min-width:0;box-sizing:border-box;padding:13px 16px;border:1.5px solid #c9def4;border-radius:12px;background:#f6faff;color:#24364b;font-size:16px;outline:none;transition:border-color .2s,box-shadow .2s;}
+.driveRouteSearchInput:focus{border-color:#4b8bd1;box-shadow:0 0 0 3px rgba(75,139,209,.14);}
+.driveRouteSearchInput::placeholder{color:#8a9bad;}
+.driveRouteSearchMessage{margin:-8px 0 16px;color:#526b86;font-size:13px;line-height:1.5;min-height:18px;}
+.routeSearchMatch{outline:3px solid #f2c14e;outline-offset:4px;border-radius:10px;animation:routeSearchPulse 1.3s ease-out 1;}
+@keyframes routeSearchPulse{0%{outline-color:#f2c14e;}100%{outline-color:transparent;}}
+
 /* Google Drive 自動路線列表 */
 .driveRoutesToolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:0 0 18px;}
 .driveRoutesStatus{color:#526b86;font-size:14px;font-weight:700;line-height:1.5;}
@@ -827,6 +836,10 @@ background:#f2f8ff;
             <div class="headerTextBlock">
                 <h1 class="headerTitle">刷盆掛機路線</h1>
                 <p class="headerSubtitle">請用巡航模式，記得開啟遊戲內腳印功能，速度選擇：時速18公里，每秒步數：3，建議一次上限15000就好，才不會影響後續敷盆所需步數</p>
+                <div class="driveRouteSearch">
+                    <input id="driveRouteSearchInput" class="driveRouteSearchInput" type="search" placeholder="搜尋路線名稱，例如：牙" autocomplete="off" oninput="searchDriveRoutes(this.value)" aria-label="搜尋刷盆路線">
+                </div>
+                <div id="driveRouteSearchMessage" class="driveRouteSearchMessage" aria-live="polite"></div>
             </div>
         </div>
     </header>
@@ -1016,6 +1029,44 @@ function loadDriveRoutes(forceRefresh=false){
     document.head.appendChild(script);
 }
 
+function searchDriveRoutes(query){
+    const value=String(query||"").trim().toLocaleLowerCase();
+    const containers=[
+        document.getElementById("driveRoutesContainer"),
+        document.getElementById("customRoutesContainer")
+    ].filter(Boolean);
+    let matches=[];
+    let total=0;
+
+    containers.forEach(container=>{
+        container.querySelectorAll(".fixedRouteItem").forEach(item=>{
+            const title=item.querySelector(".fixedRouteTitle");
+            const name=title?title.textContent.trim():"";
+            const matched=!value || name.toLocaleLowerCase().includes(value);
+            item.style.display=matched?"":"none";
+            item.classList.remove("routeSearchMatch");
+            if(value && matched){
+                matches.push(item);
+                total++;
+            }
+        });
+    });
+
+    const message=document.getElementById("driveRouteSearchMessage");
+    if(message){
+        if(!value) message.textContent="";
+        else if(!total) message.textContent="找不到包含「"+String(query).trim()+"」的路線，請試試其他關鍵字。";
+        else message.textContent="找到 "+total+" 條符合「"+String(query).trim()+"」的路線，已帶你前往第一筆結果。";
+    }
+
+    if(value && matches.length){
+        const first=matches[0];
+        first.classList.add("routeSearchMatch");
+        setTimeout(()=>first.classList.remove("routeSearchMatch"),1500);
+        setTimeout(()=>first.scrollIntoView({behavior:"smooth",block:"center"}),50);
+    }
+}
+
 function renderDriveRoutes(files){
     const container=document.getElementById("driveRoutesContainer");
     container.innerHTML="";
@@ -1038,6 +1089,8 @@ function renderDriveRoutes(files){
     });
     setDriveRoutesStatus("已同步 " + files.length + " 條 Google Drive GPX 路線");
     driveRoutesLoaded=true;
+    const searchInput=document.getElementById("driveRouteSearchInput");
+    if(searchInput && searchInput.value) searchDriveRoutes(searchInput.value);
 }
 
 document.addEventListener("DOMContentLoaded",()=>{
