@@ -767,6 +767,172 @@ border:3px solid black;
     .seoIntro h2{font-size:18px;}
 }
 
+
+
+/* ===== 手機版：保留電腦版左右雙欄結構，改用緊湊尺寸 ===== */
+@media (max-width:800px){
+    header,.container,.publicMapSection{width:96%;}
+    header{
+        gap:8px;
+        padding-top:18px;
+        align-items:center;
+    }
+    .headerAvatar{
+        width:58px;
+        height:58px;
+        flex:0 0 58px;
+        object-position:center;
+        align-self:center;
+    }
+    .headerTitleRow{
+        min-width:0;
+        padding:0 0 8px;
+    }
+    .headerTitle{
+        font-size:20px;
+        line-height:1.25;
+        white-space:normal;
+    }
+    .headerSubtitle{
+        margin-top:6px;
+        font-size:12px;
+        line-height:1.45;
+    }
+
+    .container{
+        display:grid;
+        grid-template-columns:minmax(0, 0.9fr) minmax(0, 1.1fr);
+        grid-template-areas:
+            "input right"
+            "middle middle"
+            "bottom bottom";
+        gap:10px;
+        padding:12px 0;
+        align-items:start;
+    }
+    .inputPanel,.buttonPanel,.bottomButtonPanel,.mainMapSection{
+        padding:10px;
+        border-radius:14px;
+        min-width:0;
+    }
+    .inputPanel{
+        gap:2px;
+    }
+    .inputPanel p,.inputPanel label{
+        font-size:13px;
+        line-height:1.4;
+    }
+    .inputPanel input{
+        box-sizing:border-box;
+        min-width:0;
+        font-size:12px;
+        padding:5px;
+    }
+    .coordinateInputWrap textarea,
+    .inputPanel textarea{
+        height:210px;
+        min-height:130px;
+        padding:8px;
+        font-size:11px;
+        line-height:1.35;
+    }
+    .rightMapSection{
+        gap:8px;
+    }
+    .mapPreviewControls{
+        grid-template-columns:repeat(3,minmax(0,1fr));
+        gap:4px;
+    }
+    .mapPreviewControls > button{
+        padding:8px 3px;
+        font-size:11px;
+        line-height:1.35;
+        border-radius:9px;
+        overflow-wrap:anywhere;
+    }
+    .mainMapSection{
+        margin:0;
+        padding:10px;
+    }
+    .mainMapSection h2{
+        margin:0 0 8px;
+        font-size:14px;
+        line-height:1.4;
+    }
+    .mainMapSection p{
+        font-size:11px !important;
+        line-height:1.4;
+    }
+    #map{
+        height:380px;
+        border-width:2px;
+        border-radius:12px;
+    }
+
+    .buttonPanel{
+        grid-template-columns:repeat(3,minmax(0,1fr));
+        gap:7px;
+    }
+    .bottomButtonPanel{
+        grid-template-columns:repeat(2,minmax(0,1fr));
+        gap:8px;
+    }
+    .downloadSectionTitle{
+        font-size:16px;
+        padding-bottom:7px;
+    }
+    .previewBtn,.compareBtn,.accurateBtn,.allDownloadBtn,
+    .phantomFruitBtn,.phantomFlowerBtn{
+        font-size:13px;
+        line-height:1.4;
+        padding:10px 5px;
+        border-radius:10px;
+        overflow-wrap:anywhere;
+    }
+    .hexPreviewBtn,.fruitBtn,.flowerBtn{
+        font-size:12px;
+        line-height:1.4;
+        padding:9px 4px;
+        border-radius:9px;
+        overflow-wrap:anywhere;
+    }
+    .buttonPanel > .allDownloadBtn{
+        grid-column:1 / -1;
+    }
+    .phantomOutput{
+        height:110px;
+        min-height:80px;
+        font-size:9px;
+    }
+    .phantomCopyBtn{
+        padding:8px 4px;
+        font-size:11px;
+    }
+
+    .publicMapSection{
+        margin:12px auto;
+        padding:12px;
+    }
+    .publicMapSection h2{
+        font-size:16px;
+        line-height:1.4;
+    }
+    #publicMap{
+        height:450px;
+        border-width:2px;
+    }
+    .seoIntro{
+        width:96%;
+        margin:14px auto 8px;
+        padding:14px;
+    }
+    .seoIntro h2{font-size:18px;}
+    .seoIntro p,.seoIntro li{
+        font-size:13px;
+        line-height:1.65;
+    }
+}
+
 </style>
 </head>
 
@@ -789,18 +955,7 @@ border:3px solid black;
     </div>
 </header>
 
-<section class="seoIntro" aria-labelledby="seoIntroTitle">
-    <h2 id="seoIntroTitle">免費皮克敏 GPX 路線產生器</h2>
-    <p>柴狗路線生成器是一款提供皮克敏玩家使用的線上 GPX 路線工具，可輸入 GPS 座標或上傳 GPX 檔案，預覽路線並製作適合不同遊戲需求的路線檔案。</p>
-    <p>目前提供準確收果、隨機收果、種花路線、魅影收果與魅影種花等路線功能，也有刷盆掛機路線列表及多條 GPX 路線比較地圖。</p>
-    <ul>
-        <li>GPX 路線工具：上傳 GPX 檔或輸入 GPS 座標。</li>
-        <li>皮克敏收果路線：產生準確收果與隨機收果 GPX。</li>
-        <li>皮克敏種花路線：依照輸入點位產生種花路線。</li>
-        <li>刷盆掛機路線：瀏覽及搜尋整理好的固定路線。</li>
-        <li>地圖預覽與比較：查看 GPS 點位及比較多條 GPX 路線。</li>
-    </ul>
-</section>
+
 
 <div class="container">
 
@@ -911,10 +1066,25 @@ background:#f2f8ff;
 </div>
     
 
+<section class="seoIntro" aria-labelledby="seoIntroTitle">
+    <h2 id="seoIntroTitle">免費皮克敏 GPX 路線產生器</h2>
+    <p>柴狗路線生成器是一款提供皮克敏玩家使用的線上 GPX 路線工具，可輸入 GPS 座標或上傳 GPX 檔案，預覽路線並製作適合不同遊戲需求的路線檔案。</p>
+    <p>目前提供準確收果、隨機收果、種花路線、魅影收果與魅影種花等路線功能，也有刷盆掛機路線列表及多條 GPX 路線比較地圖。</p>
+    <ul>
+        <li>GPX 路線工具：上傳 GPX 檔或輸入 GPS 座標。</li>
+        <li>皮克敏收果路線：產生準確收果與隨機收果 GPX。</li>
+        <li>皮克敏種花路線：依照輸入點位產生種花路線。</li>
+        <li>刷盆掛機路線：瀏覽及搜尋整理好的固定路線。</li>
+        <li>地圖預覽與比較：查看 GPS 點位及比較多條 GPX 路線。</li>
+    </ul>
+</section>
+
 <footer class="seoFooter">
     <p>柴狗皮克敏路線產生器｜GPX 路線製作、收果路線、種花路線、刷盆掛機路線與地圖預覽工具。</p>
     <p>本網站為玩家自製工具，與《Pikmin Bloom》及其官方營運團隊無隸屬關係。</p>
 </footer>
+
+
 
 </div><!-- generatorTab 結束 -->
 
