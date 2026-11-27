@@ -9,11 +9,6 @@
 
 
 
-
-
-
-
-
 <!DOCTYPE html>
 <html lang="zh">
 <head>
@@ -572,6 +567,38 @@ border:3px solid black;
     #fixedRoutesTab .headerTitleRow{padding-bottom:10px;}
     #fixedRoutesTab .headerTitle{font-size:21px;white-space:normal;}
     #fixedRoutesTab .headerSubtitle{font-size:14px;margin-top:8px;}
+}
+
+
+/* 最終修正：刷盆頁首直接融入頁面底色，不要任何白色卡片底 */
+#fixedRoutesTab.fixedRoutesPage{
+    background:transparent !important;
+    box-shadow:none !important;
+    border-radius:0 !important;
+}
+#fixedRoutesTab .fixedRoutesHero{
+    background:transparent !important;
+    border:0 !important;
+    border-bottom:2px solid #c9def4 !important;
+    border-radius:0 !important;
+    box-shadow:none !important;
+    margin:0 0 22px !important;
+    padding:0 0 12px !important;
+    width:100% !important;
+    justify-content:flex-start !important;
+    text-align:left !important;
+}
+#fixedRoutesTab .headerTitleRow,
+#fixedRoutesTab .headerTextBlock{
+    background:transparent !important;
+    box-shadow:none !important;
+    text-align:left !important;
+}
+#fixedRoutesTab .headerTitleRow{
+    justify-content:flex-start !important;
+}
+#fixedRoutesTab .headerTextBlock{
+    align-items:flex-start !important;
 }
 
 </style>
@@ -2601,6 +2628,7 @@ async function copyPhantomOutput(textareaId){
 
 </body>
 </html>
+1127生成器HTML 刷盆路線標題無白底版
 
 
 
