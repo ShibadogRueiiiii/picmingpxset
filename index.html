@@ -933,6 +933,123 @@ border:3px solid black;
     }
 }
 
+
+
+/* ===== 刷盆路線手機頁首：分頁按鈕、標題、小字與搜尋框整齊排列 ===== */
+@media (max-width:800px){
+    /* 手機版分頁按鈕移入目前頁面的頁首，讓它與標題同列 */
+    #generatorTab > header,
+    #fixedRoutesTab > .fixedRoutesHero{
+        position:relative;
+    }
+    .pageTabs{
+        position:absolute !important;
+        top:0 !important;
+        right:0 !important;
+        z-index:20;
+        display:flex;
+        gap:5px;
+    }
+    .pageTabButton{
+        padding:8px 11px !important;
+        font-size:13px !important;
+        line-height:1.2;
+        white-space:nowrap;
+    }
+
+    /* 刷盆頁首採用與生成器相同的左圖右文字比例 */
+    #fixedRoutesTab.fixedRoutesPage{
+        width:96% !important;
+        margin:0 auto 20px !important;
+        padding:0 0 12px !important;
+    }
+    #fixedRoutesTab .fixedRoutesHero{
+        width:100% !important;
+        margin:0 0 12px !important;
+        padding:8px 0 8px !important;
+        display:flex !important;
+        flex-direction:row !important;
+        align-items:center !important;
+        justify-content:flex-start !important;
+        gap:10px !important;
+        border:0 !important;
+        border-bottom:2px solid #c9def4 !important;
+        box-sizing:border-box !important;
+    }
+    #fixedRoutesTab .addRouteHeroImage{
+        width:58px !important;
+        height:58px !important;
+        flex:0 0 58px !important;
+        object-fit:contain !important;
+        object-position:center !important;
+        align-self:center !important;
+    }
+    #fixedRoutesTab .headerTitleRow{
+        display:flex !important;
+        flex:1 1 auto !important;
+        width:auto !important;
+        min-width:0 !important;
+        min-height:0 !important;
+        margin:0 !important;
+        padding:0 !important;
+        align-items:center !important;
+        justify-content:flex-start !important;
+        align-self:stretch !important;
+    }
+    #fixedRoutesTab .headerTextBlock{
+        display:flex !important;
+        flex-direction:column !important;
+        justify-content:center !important;
+        align-items:stretch !important;
+        width:100% !important;
+        min-width:0 !important;
+        padding:0 !important;
+        text-align:left !important;
+    }
+    #fixedRoutesTab .headerTitle{
+        margin:0 !important;
+        padding:0 145px 0 0 !important;
+        font-size:18px !important;
+        line-height:1.3 !important;
+        white-space:nowrap !important;
+        text-align:left !important;
+        box-sizing:border-box !important;
+    }
+    #fixedRoutesTab .headerSubtitle{
+        margin:6px 0 0 !important;
+        font-size:12px !important;
+        line-height:1.45 !important;
+        text-align:left !important;
+        overflow-wrap:anywhere;
+    }
+
+    /* 搜尋框置於說明文字下方，底部緊貼頁首橫線 */
+    #fixedRoutesTab .driveRouteSearch{
+        display:flex !important;
+        width:100% !important;
+        margin:8px 0 0 !important;
+        gap:0 !important;
+    }
+    #fixedRoutesTab .driveRouteSearchInput{
+        width:100% !important;
+        min-width:0 !important;
+        padding:10px 13px !important;
+        font-size:14px !important;
+        box-sizing:border-box !important;
+    }
+    #fixedRoutesTab .driveRouteSearchMessage{
+        min-height:0 !important;
+        height:auto !important;
+        margin:0 !important;
+        padding:0 !important;
+    }
+
+    #fixedRoutesTab .fixedRoutesContentPanel{
+        margin-top:0 !important;
+        padding:14px !important;
+    }
+}
+
 </style>
 </head>
 
@@ -1150,7 +1267,15 @@ function switchPageTab(tabName){
     const fixedRoutes = document.getElementById("fixedRoutesTab");
     const generatorButton = document.getElementById("generatorTabButton");
     const fixedRoutesButton = document.getElementById("fixedRoutesTabButton");
+    const pageTabs = document.querySelector(".pageTabs");
     const showGenerator = tabName === "generator";
+
+    const activeHeader = showGenerator
+        ? generator.querySelector("header")
+        : fixedRoutes.querySelector(".fixedRoutesHero");
+    if(pageTabs && activeHeader && pageTabs.parentElement !== activeHeader){
+        activeHeader.appendChild(pageTabs);
+    }
 
     generator.style.display = showGenerator ? "" : "none";
     fixedRoutes.style.display = showGenerator ? "none" : "block";
@@ -1165,6 +1290,15 @@ function switchPageTab(tabName){
     }
 }
 
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+    const pageTabs = document.querySelector(".pageTabs");
+    const generatorHeader = document.querySelector("#generatorTab > header");
+    if(pageTabs && generatorHeader){
+        generatorHeader.appendChild(pageTabs);
+    }
+});
 </script>
 
 <script>
