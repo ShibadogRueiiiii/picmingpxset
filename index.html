@@ -9,6 +9,7 @@
 
 
 
+
 <!DOCTYPE html>
 <html lang="zh">
 <head>
@@ -570,21 +571,26 @@ border:3px solid black;
 }
 
 
-/* 最終修正：刷盆頁首直接融入頁面底色，不要任何白色卡片底 */
+
+/* 區域分離：頁首透明；下方所有路線內容使用白底卡片 */
 #fixedRoutesTab.fixedRoutesPage{
+    width:70% !important;
+    margin:30px auto !important;
+    padding:22px !important;
+    box-sizing:border-box !important;
     background:transparent !important;
-    box-shadow:none !important;
     border-radius:0 !important;
+    box-shadow:none !important;
 }
 #fixedRoutesTab .fixedRoutesHero{
+    width:100% !important;
+    margin:0 0 22px !important;
+    padding:0 0 12px !important;
     background:transparent !important;
     border:0 !important;
     border-bottom:2px solid #c9def4 !important;
     border-radius:0 !important;
     box-shadow:none !important;
-    margin:0 0 22px !important;
-    padding:0 0 12px !important;
-    width:100% !important;
     justify-content:flex-start !important;
     text-align:left !important;
 }
@@ -594,11 +600,29 @@ border:3px solid black;
     box-shadow:none !important;
     text-align:left !important;
 }
-#fixedRoutesTab .headerTitleRow{
-    justify-content:flex-start !important;
+#fixedRoutesTab .headerTitleRow{justify-content:flex-start !important;}
+#fixedRoutesTab .headerTextBlock{align-items:flex-start !important;}
+#fixedRoutesTab .fixedRoutesContentPanel{
+    width:100%;
+    box-sizing:border-box;
+    padding:22px;
+    background:#ffffff;
+    border-radius:20px;
+    box-shadow:0 4px 12px rgba(0,0,0,0.1);
 }
-#fixedRoutesTab .headerTextBlock{
-    align-items:flex-start !important;
+@media(max-width:1100px){
+    #fixedRoutesTab.fixedRoutesPage{width:90% !important;}
+}
+@media(max-width:800px){
+    #fixedRoutesTab.fixedRoutesPage{
+        width:94% !important;
+        margin:70px auto 20px !important;
+        padding:16px !important;
+    }
+    #fixedRoutesTab .fixedRoutesContentPanel{
+        padding:16px;
+        border-radius:16px;
+    }
 }
 
 </style>
@@ -744,6 +768,7 @@ background:#f2f8ff;
             </div>
         </div>
     </header>
+    <div class="fixedRoutesContentPanel">
     <hr class="fixedRoutesDivider">
 
     <div class="fixedRouteItem">
@@ -772,6 +797,7 @@ background:#f2f8ff;
 48.86208838, 2.3322429</textarea>
     </div>
     <div id="customRoutesContainer"></div>
+    </div><!-- fixedRoutesContentPanel -->
 </section>
 
 <div id="addRouteDialog" class="routeDialog" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="routeDialogTitle">
@@ -2628,7 +2654,6 @@ async function copyPhantomOutput(textareaId){
 
 </body>
 </html>
-1127生成器HTML 刷盆路線標題無白底版
 
 
 
