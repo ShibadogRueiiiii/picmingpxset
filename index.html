@@ -12,6 +12,8 @@
 
 
 
+
+
 <!DOCTYPE html>
 <html lang="zh">
 <head>
@@ -512,6 +514,65 @@ border:3px solid black;
 .routeDialogActions .routeCancelButton{background:#e8eef5;color:#24364b;}
 .routeDialogMessage{min-height:18px;margin:10px 0 0;color:#b23b3b;font-size:13px;}
 .customRouteItem{margin-top:20px;}
+
+
+/* 刷盆路線頁首：比照生成器頁首，圖片靠左、標題靠左排列 */
+#fixedRoutesTab .fixedRoutesHero{
+    width:100%;
+    margin:0 0 22px;
+    padding:22px 0 0;
+    display:flex;
+    flex-direction:row;
+    align-items:stretch;
+    justify-content:flex-start;
+    gap:18px;
+    text-align:left;
+    box-sizing:border-box;
+}
+#fixedRoutesTab .addRouteHeroImage{
+    width:150px;
+    height:255px;
+    flex:0 0 150px;
+    object-fit:contain;
+    object-position:center bottom;
+    align-self:flex-end;
+}
+#fixedRoutesTab .headerTitleRow{
+    flex:1;
+    min-width:0;
+    width:auto;
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;
+    text-align:left;
+    padding:0 0 16px;
+}
+#fixedRoutesTab .headerTextBlock{
+    width:100%;
+    align-items:flex-start;
+    text-align:left;
+}
+#fixedRoutesTab .headerTitle{
+    text-align:left;
+    font-size:30px;
+}
+#fixedRoutesTab .headerSubtitle{
+    text-align:left;
+    font-size:19.5px;
+}
+@media(max-width:1100px){
+    #fixedRoutesTab .fixedRoutesHero{width:100%;}
+    #fixedRoutesTab .addRouteHeroImage{width:120px;height:204px;flex-basis:120px;}
+    #fixedRoutesTab .headerTitle{font-size:26px;}
+    #fixedRoutesTab .headerSubtitle{font-size:17px;}
+}
+@media(max-width:800px){
+    #fixedRoutesTab .fixedRoutesHero{width:100%;gap:10px;padding-top:22px;}
+    #fixedRoutesTab .addRouteHeroImage{width:88px;height:150px;flex-basis:88px;}
+    #fixedRoutesTab .headerTitleRow{padding-bottom:10px;}
+    #fixedRoutesTab .headerTitle{font-size:21px;white-space:normal;}
+    #fixedRoutesTab .headerSubtitle{font-size:14px;margin-top:8px;}
+}
 
 </style>
 </head>
