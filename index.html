@@ -10,6 +10,8 @@
 
 
 
+
+
 <!DOCTYPE html>
 <html lang="zh">
 <head>
@@ -623,6 +625,57 @@ border:3px solid black;
         padding:16px;
         border-radius:16px;
     }
+}
+
+
+/* 頁首圖片與兩行文字整齊對齊：文字區不會高於圖片 */
+#fixedRoutesTab .fixedRoutesHero{
+    display:flex !important;
+    flex-direction:row !important;
+    align-items:center !important;
+    gap:24px !important;
+}
+#fixedRoutesTab .addRouteHeroImage{
+    width:150px !important;
+    height:150px !important;
+    flex:0 0 150px !important;
+    object-fit:contain !important;
+    object-position:center center !important;
+    align-self:center !important;
+}
+#fixedRoutesTab .headerTitleRow{
+    display:flex !important;
+    align-items:center !important;
+    justify-content:flex-start !important;
+    align-self:center !important;
+    padding:0 !important;
+    margin:0 !important;
+    min-height:150px !important;
+}
+#fixedRoutesTab .headerTextBlock{
+    display:flex !important;
+    flex-direction:column !important;
+    justify-content:center !important;
+    align-items:flex-start !important;
+    text-align:left !important;
+}
+#fixedRoutesTab .headerTitle,
+#fixedRoutesTab .headerSubtitle{
+    text-align:left !important;
+}
+@media(max-width:1100px){
+    #fixedRoutesTab .fixedRoutesHero{gap:18px !important;}
+    #fixedRoutesTab .addRouteHeroImage{
+        width:120px !important;height:120px !important;flex-basis:120px !important;
+    }
+    #fixedRoutesTab .headerTitleRow{min-height:120px !important;}
+}
+@media(max-width:800px){
+    #fixedRoutesTab .fixedRoutesHero{gap:12px !important;}
+    #fixedRoutesTab .addRouteHeroImage{
+        width:88px !important;height:88px !important;flex-basis:88px !important;
+    }
+    #fixedRoutesTab .headerTitleRow{min-height:88px !important;}
 }
 
 </style>
