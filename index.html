@@ -481,6 +481,24 @@ border:3px solid black;
     line-height:1.4;
     white-space:pre;
 }
+/* 每條刷盆路線的單獨預覽按鈕 */
+.fixedRoutePreviewToolbar{display:flex;justify-content:flex-start;align-items:center;margin:2px 0 0;}
+.previewRouteButton{width:auto;margin:0;padding:9px 16px;border:1px solid #b9d7f5;border-radius:10px;background:linear-gradient(135deg,#1676c5,#2457a6);color:#fff;font-size:14px;font-weight:800;cursor:pointer;box-shadow:0 3px 9px rgba(22,118,197,.2);}
+.previewRouteButton:hover{filter:brightness(1.08);transform:translateY(-1px);}
+.routePreviewDialog{position:fixed;inset:0;z-index:6000;display:none;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;background:rgba(15,28,43,.68);}
+.routePreviewPanel{width:min(760px,100%);max-height:92vh;display:flex;flex-direction:column;gap:12px;overflow:hidden;padding:18px;background:#fff;border-radius:18px;box-shadow:0 12px 40px rgba(0,0,0,.3);box-sizing:border-box;color:#24364b;}
+.routePreviewHeading{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.routePreviewTitle{margin:0;font-size:19px;font-weight:800;line-height:1.35;overflow-wrap:anywhere;}
+.routePreviewClose{flex:0 0 auto;width:auto;margin:0;padding:8px 13px;border:0;border-radius:9px;background:#24364b;color:#fff;font-size:14px;font-weight:700;cursor:pointer;}
+.routePreviewMap{width:100%;height:min(62vh,520px);min-height:260px;border:2px solid #24364b;border-radius:12px;overflow:hidden;background:#eaf4ff;}
+.routePreviewInfo{margin:0;color:#526b86;font-size:13px;line-height:1.5;}
+@media(max-width:600px){
+    .routePreviewDialog{padding:10px;}
+    .routePreviewPanel{max-height:88vh;padding:13px;border-radius:14px;gap:9px;}
+    .routePreviewTitle{font-size:16px;}
+    .routePreviewMap{height:58vh;min-height:250px;}
+    .previewRouteButton{padding:9px 13px;font-size:13px;}
+}
 @media(max-width:1100px){
     .fixedRoutesPage{width:90%;}
     .fixedRoutesHero{width:90%;}
@@ -1261,6 +1279,18 @@ background:#f2f8ff;
   </div>
 </div>
 
+<!-- 單條刷盆 GPX 路線預覽視窗：所有雲端及自訂路線共用 -->
+<div id="routePreviewDialog" class="routePreviewDialog" role="dialog" aria-modal="true" aria-labelledby="routePreviewTitle" onclick="if(event.target===this)closeRoutePreview()">
+  <div class="routePreviewPanel">
+    <div class="routePreviewHeading">
+      <h3 id="routePreviewTitle" class="routePreviewTitle">GPX 路線預覽</h3>
+      <button type="button" class="routePreviewClose" onclick="closeRoutePreview()">✕ 關閉</button>
+    </div>
+    <div id="routePreviewMap" class="routePreviewMap" aria-label="GPX 路線地圖預覽"></div>
+    <p id="routePreviewInfo" class="routePreviewInfo"></p>
+  </div>
+</div>
+
 <script>
 function switchPageTab(tabName){
     const generator = document.getElementById("generatorTab");
@@ -1377,8 +1407,12 @@ function renderCustomRoutes(){
         const download=document.createElement("button");download.type="button";download.className="downloadRouteButton";download.textContent="一鍵下載";
         download.addEventListener("click",()=>downloadBrushRouteGPX(route.name,route.coords,download));
         actions.append(copy,download);
+        const previewToolbar=document.createElement("div");previewToolbar.className="fixedRoutePreviewToolbar";
+        const preview=document.createElement("button");preview.type="button";preview.className="previewRouteButton";preview.textContent="🗺️ 一鍵預覽路線";
+        preview.addEventListener("click",()=>openRoutePreview(route.name,route.coords));
+        previewToolbar.appendChild(preview);
         const area=document.createElement("textarea");area.className="fixedRouteOutput";area.readOnly=true;area.spellcheck=false;area.value=route.coords;
-        heading.append(title,actions);item.append(heading,area);container.append(item);
+        heading.append(title,actions);item.append(heading,previewToolbar,area);container.append(item);
     });
 }
 async function copyCustomRoute(value,button){
@@ -1386,6 +1420,76 @@ async function copyCustomRoute(value,button){
     button.textContent="已複製！";setTimeout(()=>button.textContent="一鍵複製",1300);
     }catch(e){alert("複製失敗，請手動選取文字複製。");}
 }
+// 將刷盆路線座標解析成 Leaflet 可用的 [緯度,經度] 陣列
+function parseBrushRouteCoordinates(coordinateText){
+    const points=[];
+    String(coordinateText||"").split(/\r?\n/).forEach(line=>{
+        const parts=line.trim().split(",");
+        if(parts.length!==2) return;
+        const lat=parseFloat(parts[0].trim());
+        const lon=parseFloat(parts[1].trim());
+        if(!Number.isFinite(lat)||!Number.isFinite(lon)) return;
+        if(lat < -90 || lat > 90 || lon < -180 || lon > 180) return;
+        points.push([lat,lon]);
+    });
+    return points;
+}
+
+let brushRoutePreviewMap=null;
+let brushRoutePreviewLayer=null;
+function openRoutePreview(routeName, coordinateText){
+    const points=parseBrushRouteCoordinates(coordinateText);
+    if(!points.length){
+        alert("這條路線沒有有效的 GPS 座標，無法預覽。");
+        return;
+    }
+    const dialog=document.getElementById("routePreviewDialog");
+    const title=document.getElementById("routePreviewTitle");
+    const info=document.getElementById("routePreviewInfo");
+    title.textContent=String(routeName||"刷盆路線")+"｜路線預覽";
+    info.textContent="共 "+points.length+" 個 GPS 點位；綠色為起點，紅色為終點。";
+    dialog.style.display="flex";
+
+    // 等對話框顯示後再建立/重繪地圖，避免 Leaflet 取得錯誤尺寸
+    requestAnimationFrame(()=>{
+        const mapElement=document.getElementById("routePreviewMap");
+        if(!window.L){
+            info.textContent="地圖元件載入失敗，請重新整理網頁後再試。";
+            return;
+        }
+        if(!brushRoutePreviewMap){
+            brushRoutePreviewMap=L.map(mapElement,{preferCanvas:true});
+            L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',{
+                maxZoom:19,
+                attribution:'&copy; OpenStreetMap contributors'
+            }).addTo(brushRoutePreviewMap);
+        }
+        brushRoutePreviewMap.invalidateSize(true);
+        if(brushRoutePreviewLayer){brushRoutePreviewMap.removeLayer(brushRoutePreviewLayer);}
+        const layers=[];
+        const line=L.polyline(points,{color:'#1676d2',weight:5,opacity:.9,lineCap:'round',lineJoin:'round'});
+        layers.push(line);
+        layers.push(L.circleMarker(points[0],{radius:8,color:'#fff',weight:2,fillColor:'#22a447',fillOpacity:1}).bindTooltip('起點'));
+        if(points.length>1){
+            layers.push(L.circleMarker(points[points.length-1],{radius:8,color:'#fff',weight:2,fillColor:'#e53935',fillOpacity:1}).bindTooltip('終點'));
+        }
+        brushRoutePreviewLayer=L.featureGroup(layers).addTo(brushRoutePreviewMap);
+        const bounds=brushRoutePreviewLayer.getBounds();
+        if(bounds.isValid()){
+            if(points.length===1) brushRoutePreviewMap.setView(points[0],16);
+            else brushRoutePreviewMap.fitBounds(bounds,{padding:[28,28],maxZoom:17});
+        }
+        setTimeout(()=>brushRoutePreviewMap.invalidateSize(true),120);
+    });
+}
+function closeRoutePreview(){
+    const dialog=document.getElementById("routePreviewDialog");
+    if(dialog) dialog.style.display="none";
+}
+document.addEventListener("keydown",event=>{
+    if(event.key==="Escape") closeRoutePreview();
+});
+
 // 將刷盆路線文字框的座標轉成生成器相同格式的 GPX 收果檔
 function downloadBrushRouteGPX(routeName, coordinateText, button){
     const points=[];
@@ -1534,10 +1638,14 @@ function renderDriveRoutes(files){
         const download=document.createElement("button");download.type="button";download.className="downloadRouteButton";download.textContent="一鍵下載";
         const area=document.createElement("textarea");area.className="fixedRouteOutput";area.readOnly=true;area.spellcheck=false;
         area.value=String(route.coordinates||"");
+        const previewToolbar=document.createElement("div");previewToolbar.className="fixedRoutePreviewToolbar";
+        const preview=document.createElement("button");preview.type="button";preview.className="previewRouteButton";preview.textContent="🗺️ 一鍵預覽路線";
+        preview.addEventListener("click",()=>openRoutePreview(title.textContent,area.value));
+        previewToolbar.appendChild(preview);
         copy.addEventListener("click",()=>copyCustomRoute(area.value,copy));
         download.addEventListener("click",()=>downloadBrushRouteGPX(title.textContent,area.value,download));
         actions.append(copy,download);
-        heading.append(title,actions);item.append(heading,area);container.appendChild(item);
+        heading.append(title,actions);item.append(heading,previewToolbar,area);container.appendChild(item);
     });
     setDriveRoutesStatus("已同步 " + files.length + " 條 Google Drive GPX 路線");
     driveRoutesLoaded=true;
