@@ -12,6 +12,8 @@
 
 
 
+
+
 <!DOCTYPE html>
 <html lang="zh">
 <head>
@@ -462,6 +464,25 @@ border:3px solid black;
     .fixedRoutesPage{width:94%;margin:70px auto 20px;padding:16px;}
 }
 
+
+.fixedRoutesHeader{display:flex;justify-content:flex-start;align-items:center;margin:0 0 12px;}
+.addRouteImage{width:68px;height:66px;object-fit:contain;cursor:pointer;transition:transform .15s;}
+.addRouteImage:hover{transform:scale(1.06);}
+.fixedRouteHeading{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.copyRouteButton{width:auto;margin:0;padding:7px 13px;border:1px solid #c9def4;border-radius:9px;background:#24364b;color:#fff;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;}
+.copyRouteButton:hover{background:#385b7e;}
+.routeDialog{position:fixed;inset:0;z-index:5000;background:rgba(15,28,43,.58);display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;}
+.routeDialogPanel{width:min(480px,100%);max-height:90vh;overflow:auto;background:#fff;border-radius:16px;padding:22px;box-shadow:0 10px 35px rgba(0,0,0,.25);box-sizing:border-box;color:#24364b;}
+.routeDialogPanel h3{margin:0 0 16px;font-size:20px;}
+.routeDialogPanel label{display:block;margin:12px 0 6px;font-weight:700;font-size:14px;}
+.routeDialogPanel input,.routeDialogPanel textarea{width:100%;box-sizing:border-box;border:1px solid #c9def4;border-radius:9px;padding:10px;background:#f6faff;color:#24364b;font:14px sans-serif;}
+.routeDialogPanel textarea{resize:vertical;font-family:monospace;}
+.routeDialogActions{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;}
+.routeDialogActions button{width:auto;margin:0;padding:9px 14px;border:0;border-radius:9px;background:#24364b;color:#fff;font-weight:700;cursor:pointer;}
+.routeDialogActions .routeCancelButton{background:#e8eef5;color:#24364b;}
+.routeDialogMessage{min-height:18px;margin:10px 0 0;color:#b23b3b;font-size:13px;}
+.customRouteItem{margin-top:20px;}
+
 </style>
 </head>
 
@@ -596,11 +617,14 @@ background:#f2f8ff;
 </div><!-- generatorTab 結束 -->
 
 <section id="fixedRoutesTab" class="fixedRoutesPage" style="display:none;">
+    <div class="fixedRoutesHeader">
+        <img class="addRouteImage" src="data:image/png;base64,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" alt="Lv 130" title="點擊新增路線" role="button" tabindex="0" onclick="openAddRouteDialog()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openAddRouteDialog();}">
+    </div>
     <p class="fixedRoutesNotice">請用巡航模式，並開啟遊戲內腳印功能、時速18公里</p>
     <hr class="fixedRoutesDivider">
 
     <div class="fixedRouteItem">
-        <h3 class="fixedRouteTitle">牙刷路線</h3>
+        <div class="fixedRouteHeading"><h3 class="fixedRouteTitle">牙刷路線</h3><button type="button" class="copyRouteButton" onclick="copyRouteText(this)">一鍵複製</button></div>
         <textarea class="fixedRouteOutput" readonly spellcheck="false">24.999630,121.460760
 24.999619,121.460702
 24.999568,121.460709
@@ -613,7 +637,7 @@ background:#f2f8ff;
     </div>
 
     <div class="fixedRouteItem">
-        <h3 class="fixedRouteTitle">麵包路線</h3>
+        <div class="fixedRouteHeading"><h3 class="fixedRouteTitle">麵包路線</h3><button type="button" class="copyRouteButton" onclick="copyRouteText(this)">一鍵複製</button></div>
         <textarea class="fixedRouteOutput" readonly spellcheck="false">48.86203138, 2.33232390
 48.86202038, 2.3322659
 48.86196938, 2.3322729
@@ -624,7 +648,28 @@ background:#f2f8ff;
 48.86211138, 2.3323109
 48.86208838, 2.3322429</textarea>
     </div>
+    <div id="customRoutesContainer"></div>
 </section>
+
+<div id="addRouteDialog" class="routeDialog" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="routeDialogTitle">
+  <div class="routeDialogPanel">
+    <h3 id="routeDialogTitle">新增刷盆路線</h3>
+    <label for="routePassword">請輸入審核密碼</label>
+    <input id="routePassword" type="password" autocomplete="current-password" placeholder="密碼">
+    <div id="routeEditor" style="display:none;">
+      <label for="newRouteName">路線名稱</label>
+      <input id="newRouteName" type="text" maxlength="40" placeholder="例如：新路線">
+      <label for="newRouteCoordinates">座標（每行一組，格式：緯度,經度）</label>
+      <textarea id="newRouteCoordinates" rows="8" placeholder="24.999630,121.460760"></textarea>
+    </div>
+    <p id="routeDialogMessage" class="routeDialogMessage"></p>
+    <div class="routeDialogActions">
+      <button type="button" id="routeAuthorizeButton" onclick="authorizeRouteEdit()">驗證密碼</button>
+      <button type="button" id="routeSaveButton" style="display:none;" onclick="saveCustomRoute()">新增路線</button>
+      <button type="button" class="routeCancelButton" onclick="closeAddRouteDialog()">取消</button>
+    </div>
+  </div>
+</div>
 
 <script>
 function switchPageTab(tabName){
@@ -643,6 +688,83 @@ function switchPageTab(tabName){
         setTimeout(() => map.invalidateSize(), 100);
     }
 }
+
+</script>
+
+<script>
+/* 路線複製 */
+async function copyRouteText(button){
+    const textarea=button.closest(".fixedRouteItem").querySelector("textarea");
+    try{
+        if(navigator.clipboard && window.isSecureContext){
+            await navigator.clipboard.writeText(textarea.value);
+        }else{
+            textarea.focus(); textarea.select();
+            if(!document.execCommand("copy")) throw new Error("copy failed");
+        }
+        const old=button.textContent; button.textContent="已複製！";
+        setTimeout(()=>button.textContent=old,1300);
+    }catch(e){ alert("複製失敗，請手動選取文字複製。"); }
+}
+function openAddRouteDialog(){
+    const dialog=document.getElementById("addRouteDialog");
+    dialog.style.display="flex";
+    document.getElementById("routePassword").value="";
+    document.getElementById("routeEditor").style.display="none";
+    document.getElementById("routeAuthorizeButton").style.display="";
+    document.getElementById("routeSaveButton").style.display="none";
+    document.getElementById("routeDialogMessage").textContent="";
+}
+function closeAddRouteDialog(){document.getElementById("addRouteDialog").style.display="none";}
+function authorizeRouteEdit(){
+    if(document.getElementById("routePassword").value==="Qappgary010071"){
+        document.getElementById("routeEditor").style.display="block";
+        document.getElementById("routeAuthorizeButton").style.display="none";
+        document.getElementById("routeSaveButton").style.display="";
+        document.getElementById("routeDialogMessage").textContent="密碼驗證通過，請輸入新路線資料。";
+        document.getElementById("routeDialogMessage").style.color="#27834b";
+    }else{
+        document.getElementById("routeDialogMessage").textContent="密碼錯誤，無法新增或編輯路線。";
+    }
+}
+function saveCustomRoute(){
+    const name=document.getElementById("newRouteName").value.trim();
+    const coords=document.getElementById("newRouteCoordinates").value.trim();
+    const msg=document.getElementById("routeDialogMessage");
+    if(!name || !coords){msg.textContent="請填寫路線名稱與座標。";return;}
+    const lines=coords.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
+    const valid=lines.every(line=>/^[-+]?\d+(?:\.\d+)?\s*,\s*[-+]?\d+(?:\.\d+)?$/.test(line));
+    if(!valid){msg.textContent="座標格式有誤，請確認每行都是「緯度,經度」。";return;}
+    const route={name,coords:lines.join("\n")};
+    let routes=[];
+    try{routes=JSON.parse(localStorage.getItem("customBrushRoutes")||"[]");}catch(e){}
+    routes.push(route);
+    try{localStorage.setItem("customBrushRoutes",JSON.stringify(routes));}
+    catch(e){msg.textContent="儲存失敗，可能是瀏覽器儲存空間不足。";return;}
+    renderCustomRoutes(); closeAddRouteDialog();
+    document.getElementById("newRouteName").value="";
+    document.getElementById("newRouteCoordinates").value="";
+}
+function renderCustomRoutes(){
+    const container=document.getElementById("customRoutesContainer");
+    let routes=[];try{routes=JSON.parse(localStorage.getItem("customBrushRoutes")||"[]");}catch(e){}
+    container.innerHTML="";
+    routes.forEach(route=>{
+        const item=document.createElement("div");item.className="fixedRouteItem customRouteItem";
+        const heading=document.createElement("div");heading.className="fixedRouteHeading";
+        const title=document.createElement("h3");title.className="fixedRouteTitle";title.textContent=route.name;
+        const copy=document.createElement("button");copy.type="button";copy.className="copyRouteButton";copy.textContent="一鍵複製";
+        copy.addEventListener("click",()=>copyCustomRoute(route.coords,copy));
+        const area=document.createElement("textarea");area.className="fixedRouteOutput";area.readOnly=true;area.spellcheck=false;area.value=route.coords;
+        heading.append(title,copy);item.append(heading,area);container.append(item);
+    });
+}
+async function copyCustomRoute(value,button){
+    try{if(navigator.clipboard&&window.isSecureContext)await navigator.clipboard.writeText(value);else{const t=document.createElement("textarea");t.value=value;document.body.append(t);t.select();document.execCommand("copy");t.remove();}
+    button.textContent="已複製！";setTimeout(()=>button.textContent="一鍵複製",1300);
+    }catch(e){alert("複製失敗，請手動選取文字複製。");}
+}
+document.addEventListener("DOMContentLoaded",renderCustomRoutes);
 </script>
 
 <script src="gpx-list.js"></script>
