@@ -481,8 +481,7 @@ border:3px solid black;
     line-height:1.4;
     white-space:pre;
 }
-/* 每條刷盆路線的單獨預覽按鈕 */
-.fixedRoutePreviewToolbar{display:flex;justify-content:flex-start;align-items:center;margin:2px 0 0;}
+/* 每條刷盆路線的三個操作按鈕固定同列 */
 .previewRouteButton{width:auto;margin:0;padding:9px 16px;border:1px solid #b9d7f5;border-radius:10px;background:linear-gradient(135deg,#1676c5,#2457a6);color:#fff;font-size:14px;font-weight:800;cursor:pointer;box-shadow:0 3px 9px rgba(22,118,197,.2);}
 .previewRouteButton:hover{filter:brightness(1.08);transform:translateY(-1px);}
 .routePreviewDialog{position:fixed;inset:0;z-index:6000;display:none;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;background:rgba(15,28,43,.68);}
@@ -549,7 +548,8 @@ border:3px solid black;
 .copyRouteButton:hover{background:#385b7e;}
 .downloadRouteButton{width:auto;margin:0;padding:7px 13px;border:1px solid #b9dfc5;border-radius:9px;background:#21864a;color:#fff;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;}
 .downloadRouteButton:hover{background:#176b39;}
-.fixedRouteActions{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap;}
+.fixedRouteActions{display:flex;align-items:center;justify-content:stretch;gap:8px;flex-wrap:nowrap;width:100%;}
+.fixedRouteActions .previewRouteButton,.fixedRouteActions .copyRouteButton,.fixedRouteActions .downloadRouteButton{flex:1 1 0;min-width:0;box-sizing:border-box;text-align:center;padding:8px 6px;font-size:13px;white-space:nowrap;}
 .routeDialog{position:fixed;inset:0;z-index:5000;background:rgba(15,28,43,.58);display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;}
 .routeDialogPanel{width:min(480px,100%);max-height:90vh;overflow:auto;background:#fff;border-radius:16px;padding:22px;box-shadow:0 10px 35px rgba(0,0,0,.25);box-sizing:border-box;color:#24364b;}
 .routeDialogPanel h3{margin:0 0 16px;font-size:20px;}
@@ -1402,17 +1402,15 @@ function renderCustomRoutes(){
         const heading=document.createElement("div");heading.className="fixedRouteHeading";
         const title=document.createElement("h3");title.className="fixedRouteTitle";title.textContent=route.name;
         const actions=document.createElement("div");actions.className="fixedRouteActions";
+        const preview=document.createElement("button");preview.type="button";preview.className="previewRouteButton";preview.textContent="🗺️ 一鍵預覽";
+        preview.addEventListener("click",()=>openRoutePreview(route.name,route.coords));
         const copy=document.createElement("button");copy.type="button";copy.className="copyRouteButton";copy.textContent="一鍵複製";
         copy.addEventListener("click",()=>copyCustomRoute(route.coords,copy));
         const download=document.createElement("button");download.type="button";download.className="downloadRouteButton";download.textContent="一鍵下載";
         download.addEventListener("click",()=>downloadBrushRouteGPX(route.name,route.coords,download));
-        actions.append(copy,download);
-        const previewToolbar=document.createElement("div");previewToolbar.className="fixedRoutePreviewToolbar";
-        const preview=document.createElement("button");preview.type="button";preview.className="previewRouteButton";preview.textContent="🗺️ 一鍵預覽路線";
-        preview.addEventListener("click",()=>openRoutePreview(route.name,route.coords));
-        previewToolbar.appendChild(preview);
+        actions.append(preview,copy,download);
         const area=document.createElement("textarea");area.className="fixedRouteOutput";area.readOnly=true;area.spellcheck=false;area.value=route.coords;
-        heading.append(title,actions);item.append(heading,previewToolbar,area);container.append(item);
+        heading.appendChild(title);item.append(heading,actions,area);container.append(item);
     });
 }
 async function copyCustomRoute(value,button){
@@ -1634,18 +1632,16 @@ function renderDriveRoutes(files){
         const title=document.createElement("h3");title.className="fixedRouteTitle";
         title.textContent=String(route.name||"未命名路線").replace(/\.gpx$/i,"");
         const actions=document.createElement("div");actions.className="fixedRouteActions";
+        const preview=document.createElement("button");preview.type="button";preview.className="previewRouteButton";preview.textContent="🗺️ 一鍵預覽";
+        preview.addEventListener("click",()=>openRoutePreview(title.textContent,area.value));
         const copy=document.createElement("button");copy.type="button";copy.className="copyRouteButton";copy.textContent="一鍵複製";
         const download=document.createElement("button");download.type="button";download.className="downloadRouteButton";download.textContent="一鍵下載";
         const area=document.createElement("textarea");area.className="fixedRouteOutput";area.readOnly=true;area.spellcheck=false;
         area.value=String(route.coordinates||"");
-        const previewToolbar=document.createElement("div");previewToolbar.className="fixedRoutePreviewToolbar";
-        const preview=document.createElement("button");preview.type="button";preview.className="previewRouteButton";preview.textContent="🗺️ 一鍵預覽路線";
-        preview.addEventListener("click",()=>openRoutePreview(title.textContent,area.value));
-        previewToolbar.appendChild(preview);
         copy.addEventListener("click",()=>copyCustomRoute(area.value,copy));
         download.addEventListener("click",()=>downloadBrushRouteGPX(title.textContent,area.value,download));
-        actions.append(copy,download);
-        heading.append(title,actions);item.append(heading,previewToolbar,area);container.appendChild(item);
+        actions.append(preview,copy,download);
+        heading.appendChild(title);item.append(heading,actions,area);container.appendChild(item);
     });
     setDriveRoutesStatus("已同步 " + files.length + " 條 Google Drive GPX 路線");
     driveRoutesLoaded=true;
