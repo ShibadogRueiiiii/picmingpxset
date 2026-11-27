@@ -13,10 +13,38 @@
 
 
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
-<title>柴狗生成器</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>皮克敏路線產生器｜GPX 收果、種花與刷盆路線工具｜柴狗</title>
+<meta name="description" content="柴狗皮克敏路線產生器，提供免費 GPX 路線製作與地圖預覽，支援 GPS 座標輸入、準確收果、隨機收果、種花路線、魅影路線及刷盆掛機路線，方便皮克敏玩家建立與比較路線。">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<link rel="canonical" href="https://picmingpxset.vercel.app/">
+<meta name="theme-color" content="#eaf4ff">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:site_name" content="柴狗路線生成器">
+<meta property="og:title" content="皮克敏路線產生器｜GPX 收果、種花與刷盆路線工具｜柴狗">
+<meta property="og:description" content="免費製作皮克敏 GPX 路線，支援收果、種花、魅影、刷盆路線與地圖預覽。">
+<meta property="og:url" content="https://picmingpxset.vercel.app/">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="皮克敏路線產生器｜柴狗">
+<meta name="twitter:description" content="免費製作皮克敏 GPX 路線，支援收果、種花、魅影、刷盆路線與地圖預覽。">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "柴狗皮克敏路線產生器",
+  "alternateName": "柴狗路線生成器",
+  "url": "https://picmingpxset.vercel.app/",
+  "description": "提供皮克敏玩家使用的 GPX 路線工具，支援 GPS 座標輸入、收果路線、種花路線、魅影路線、刷盆掛機路線及地圖預覽。",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "inLanguage": "zh-TW",
+  "isAccessibleForFree": true
+}
+</script>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -702,6 +730,43 @@ border:3px solid black;
 .driveRouteError{padding:12px 14px;margin:0 0 16px;border:1px solid #f0c6c6;border-radius:10px;background:#fff5f5;color:#a12c2c;font-size:14px;line-height:1.6;}
 .driveRouteEmpty{padding:12px 14px;border:1px solid #c9def4;border-radius:10px;background:#f6faff;color:#526b86;font-size:14px;line-height:1.6;}
 
+
+
+/* SEO 介紹區：提供清楚、可閱讀的網站功能說明 */
+.seoIntro{
+    width:70%;
+    margin:18px auto 8px;
+    padding:18px 22px;
+    box-sizing:border-box;
+    background:rgba(255,255,255,.78);
+    border:1px solid #c9def4;
+    border-radius:16px;
+    color:#24364b;
+    line-height:1.75;
+}
+.seoIntro h2{margin:0 0 8px;font-size:21px;}
+.seoIntro p{margin:7px 0;font-size:15px;}
+.seoIntro ul{margin:8px 0 0;padding-left:22px;}
+.seoIntro li{margin:3px 0;}
+.seoFooter{
+    width:70%;
+    margin:18px auto 30px;
+    padding:16px 20px;
+    box-sizing:border-box;
+    color:#526b86;
+    font-size:13px;
+    line-height:1.7;
+    text-align:center;
+}
+@media(max-width:1100px){
+    .seoIntro,.seoFooter{width:90%;}
+}
+@media(max-width:800px){
+    .seoIntro,.seoFooter{width:94%;}
+    .seoIntro{padding:15px;font-size:14px;}
+    .seoIntro h2{font-size:18px;}
+}
+
 </style>
 </head>
 
@@ -723,6 +788,19 @@ border:3px solid black;
         </div>
     </div>
 </header>
+
+<section class="seoIntro" aria-labelledby="seoIntroTitle">
+    <h2 id="seoIntroTitle">免費皮克敏 GPX 路線產生器</h2>
+    <p>柴狗路線生成器是一款提供皮克敏玩家使用的線上 GPX 路線工具，可輸入 GPS 座標或上傳 GPX 檔案，預覽路線並製作適合不同遊戲需求的路線檔案。</p>
+    <p>目前提供準確收果、隨機收果、種花路線、魅影收果與魅影種花等路線功能，也有刷盆掛機路線列表及多條 GPX 路線比較地圖。</p>
+    <ul>
+        <li>GPX 路線工具：上傳 GPX 檔或輸入 GPS 座標。</li>
+        <li>皮克敏收果路線：產生準確收果與隨機收果 GPX。</li>
+        <li>皮克敏種花路線：依照輸入點位產生種花路線。</li>
+        <li>刷盆掛機路線：瀏覽及搜尋整理好的固定路線。</li>
+        <li>地圖預覽與比較：查看 GPS 點位及比較多條 GPX 路線。</li>
+    </ul>
+</section>
 
 <div class="container">
 
@@ -832,6 +910,11 @@ background:#f2f8ff;
 
 </div>
     
+
+<footer class="seoFooter">
+    <p>柴狗皮克敏路線產生器｜GPX 路線製作、收果路線、種花路線、刷盆掛機路線與地圖預覽工具。</p>
+    <p>本網站為玩家自製工具，與《Pikmin Bloom》及其官方營運團隊無隸屬關係。</p>
+</footer>
 
 </div><!-- generatorTab 結束 -->
 
