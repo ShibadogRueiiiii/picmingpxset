@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://picmingpxset.vercel.app/sitemap.xml
