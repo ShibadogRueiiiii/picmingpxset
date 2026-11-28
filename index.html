@@ -1393,6 +1393,54 @@ function saveCustomRoute(){
     document.getElementById("newRouteName").value="";
     document.getElementById("newRouteCoordinates").value="";
 }
+
+// 依照刷盆路線第一個有效座標，自動查詢時區並顯示台灣跨夜時間
+const brushRouteTimezoneCache = new Map();
+function formatRouteUtcOffset(seconds){
+    const totalMinutes=Math.round(Number(seconds||0)/60);
+    const sign=totalMinutes>=0?"+":"-";
+    const abs=Math.abs(totalMinutes);
+    const hours=Math.floor(abs/60);
+    const minutes=abs%60;
+    return "GMT"+sign+hours+(minutes?":"+String(minutes).padStart(2,"0"):"");
+}
+function formatTaiwanCrossMidnight(seconds){
+    // 台灣為 UTC+8；目的地當地時間 00:00 時的台灣時間
+    let minutes=((480-Math.round(Number(seconds||0)/60))%1440+1440)%1440;
+    const hours=Math.floor(minutes/60);
+    const remainder=minutes%60;
+    return "台灣時間"+hours+"點"+(remainder?remainder+"分":"")+"跨夜";
+}
+async function applyBrushRouteTimezone(titleElement, coordinateText){
+    const points=parseBrushRouteCoordinates(coordinateText);
+    if(!titleElement || !points.length) return;
+    const [lat,lon]=points[0];
+    const key=lat.toFixed(5)+","+lon.toFixed(5);
+    titleElement.dataset.routeTimezoneKey=key;
+    try{
+        let timezoneData=brushRouteTimezoneCache.get(key);
+        if(!timezoneData){
+            const url="https://api.open-meteo.com/v1/forecast?latitude="+encodeURIComponent(lat)+"&longitude="+encodeURIComponent(lon)+"&current=temperature_2m&timezone=auto";
+            const response=await fetch(url);
+            if(!response.ok) throw new Error("時區查詢失敗");
+            const data=await response.json();
+            if(!data || !data.timezone || !Number.isFinite(Number(data.utc_offset_seconds))) throw new Error("時區資料不完整");
+            timezoneData={timezone:data.timezone,offset:Number(data.utc_offset_seconds)};
+            brushRouteTimezoneCache.set(key,timezoneData);
+        }
+        // 避免非同步查詢完成時，標題元素已被重新使用
+        if(titleElement.dataset.routeTimezoneKey!==key) return;
+        const baseName=titleElement.dataset.routeBaseName || titleElement.textContent;
+        titleElement.dataset.routeBaseName=baseName;
+        const offsetLabel=formatRouteUtcOffset(timezoneData.offset);
+        const isTaiwan=timezoneData.timezone==="Asia/Taipei";
+        titleElement.textContent=baseName+"　"+offsetLabel+"　"+(isTaiwan?"台灣時區":formatTaiwanCrossMidnight(timezoneData.offset));
+    }catch(error){
+        // 網路或時區服務暫時不可用時，保留原路線名稱，不影響其他功能
+        console.warn("刷盆路線時區查詢失敗：",error);
+    }
+}
+
 function renderCustomRoutes(){
     const container=document.getElementById("customRoutesContainer");
     let routes=[];try{routes=JSON.parse(localStorage.getItem("customBrushRoutes")||"[]");}catch(e){}
@@ -1401,6 +1449,8 @@ function renderCustomRoutes(){
         const item=document.createElement("div");item.className="fixedRouteItem customRouteItem";
         const heading=document.createElement("div");heading.className="fixedRouteHeading";
         const title=document.createElement("h3");title.className="fixedRouteTitle";title.textContent=route.name;
+        title.dataset.routeBaseName=route.name;
+        applyBrushRouteTimezone(title,route.coords);
         const actions=document.createElement("div");actions.className="fixedRouteActions";
         const preview=document.createElement("button");preview.type="button";preview.className="previewRouteButton";preview.textContent="🗺️ 一鍵預覽";
         preview.addEventListener("click",()=>openRoutePreview(route.name,route.coords));
@@ -1631,6 +1681,8 @@ function renderDriveRoutes(files){
         const heading=document.createElement("div");heading.className="fixedRouteHeading";
         const title=document.createElement("h3");title.className="fixedRouteTitle";
         title.textContent=String(route.name||"未命名路線").replace(/\.gpx$/i,"");
+        title.dataset.routeBaseName=title.textContent;
+        applyBrushRouteTimezone(title,route.coordinates||"");
         const actions=document.createElement("div");actions.className="fixedRouteActions";
         const preview=document.createElement("button");preview.type="button";preview.className="previewRouteButton";preview.textContent="🗺️ 一鍵預覽";
         preview.addEventListener("click",()=>openRoutePreview(title.textContent,area.value));
