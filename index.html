@@ -18,12 +18,6 @@
 
 
 
-
-
-
-
-
-
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
@@ -629,11 +623,21 @@ border:3px solid black;
     text-align:left;
     font-size:19.5px;
 }
+#fixedRoutesTab .timezoneGuide{
+    margin-top:6px;
+    text-align:left;
+    font-size:19.5px;
+    line-height:1.5;
+}
+#fixedRoutesTab .timezoneGuide p{
+    margin:2px 0;
+}
 @media(max-width:1100px){
     #fixedRoutesTab .fixedRoutesHero{width:100%;}
     #fixedRoutesTab .addRouteHeroImage{width:120px;height:204px;flex-basis:120px;}
     #fixedRoutesTab .headerTitle{font-size:26px;}
     #fixedRoutesTab .headerSubtitle{font-size:17px;}
+    #fixedRoutesTab .timezoneGuide{font-size:17px;}
 }
 @media(max-width:800px){
     #fixedRoutesTab .fixedRoutesHero{width:100%;gap:10px;padding-top:22px;}
@@ -641,6 +645,7 @@ border:3px solid black;
     #fixedRoutesTab .headerTitleRow{padding-bottom:10px;}
     #fixedRoutesTab .headerTitle{font-size:21px;white-space:normal;}
     #fixedRoutesTab .headerSubtitle{font-size:14px;margin-top:8px;}
+    #fixedRoutesTab .timezoneGuide{font-size:14px;}
 }
 
 
@@ -1249,6 +1254,10 @@ background:#f2f8ff;
             <div class="headerTextBlock">
                 <h1 class="headerTitle">刷盆掛機路線</h1>
                 <p class="headerSubtitle">請用巡航模式，記得開啟遊戲內腳印功能，速度選擇：時速18公里，每秒步數：3，建議一次上限15000就好，才不會影響後續敷盆所需步數</p>
+                <div class="timezoneGuide">
+                    <p>若時區晚於台灣，表示台灣時間隔天的那個時候，當地才會跨夜</p>
+                    <p>若時區早於台灣，就要注意他會比台灣更早跨夜</p>
+                </div>
                 <div class="driveRouteSearch">
                     <input id="driveRouteSearchInput" class="driveRouteSearchInput" type="search" placeholder="搜尋路線名稱，例如：牙" autocomplete="off" oninput="searchDriveRoutes(this.value)" aria-label="搜尋刷盆路線">
                 </div>
