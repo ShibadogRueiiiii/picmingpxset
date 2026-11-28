@@ -465,6 +465,13 @@ border:3px solid black;
     font-size:18px;
     font-weight:800;
 }
+.fixedRouteTitleName{
+    font-size:1.3em;
+}
+.fixedRouteTitleNote{
+    font-size:1em;
+    font-weight:800;
+}
 .fixedRouteOutput{
     width:100%;
     height:140px;
@@ -1434,7 +1441,18 @@ async function applyBrushRouteTimezone(titleElement, coordinateText){
         titleElement.dataset.routeBaseName=baseName;
         const offsetLabel=formatRouteUtcOffset(timezoneData.offset);
         const isTaiwan=timezoneData.timezone==="Asia/Taipei";
-        titleElement.textContent=baseName+"　"+offsetLabel+"　"+(isTaiwan?"台灣時區":formatTaiwanCrossMidnight(timezoneData.offset));
+        const offsetMinutes=Math.round(timezoneData.offset/60);
+        const timezoneRelation=isTaiwan?"台灣時區":(offsetMinutes>480?"早於台灣時區":"晚於台灣時區");
+        const noteText=isTaiwan?offsetLabel+"　台灣時區":offsetLabel+"　"+timezoneRelation+"　"+formatTaiwanCrossMidnight(timezoneData.offset);
+        titleElement.textContent="";
+        const nameSpan=document.createElement("span");
+        nameSpan.className="fixedRouteTitleName";
+        nameSpan.textContent=baseName;
+        const noteSpan=document.createElement("span");
+        noteSpan.className="fixedRouteTitleNote";
+        noteSpan.textContent="　　　"+noteText;
+        titleElement.appendChild(nameSpan);
+        titleElement.appendChild(noteSpan);
     }catch(error){
         // 網路或時區服務暫時不可用時，保留原路線名稱，不影響其他功能
         console.warn("刷盆路線時區查詢失敗：",error);
